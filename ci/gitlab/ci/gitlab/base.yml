@@ -1,9 +1,0 @@
-# Gitlab ci
-# This file is used to define the base configuration for GitLab CI/CD pipelines.
-
-
-.node:
-  image: node:23
-  before_script:
-    - npm install
-    - npm run build

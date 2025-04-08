@@ -6,12 +6,13 @@ package main
 import (
 	"os"
 
-	"github.com/moq77111113/kite/pkg/cmd"
+	"github.com/moq77111113/kite/internal/cmd"
 )
 
 
 
 func main() {
+	
 	root := cmd.NewKiteCmd()
 
 	root.AddCommand(cmd.NewAddCmd())
