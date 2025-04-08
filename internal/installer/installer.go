@@ -6,10 +6,19 @@ import (
 	"path/filepath"
 
 	"github.com/moq77111113/kite/internal/registry"
+	spinner "github.com/moq77111113/kite/internal/vendors"
 )
 
-func InstallAllModules(module []*registry.Module, destDir string) error {
-	for _, mod := range module {
+func InstallAllModules(modules []*registry.Module, destDir string) error {
+	if len(modules) == 0 {
+		return nil
+	}
+
+	s := spinner.StartWithMessage("Installing modules")
+	defer s.Stop()
+
+	for i, mod := range modules {
+		s.UpdateMessagef("Installing module %d/%d: %s", i+1, len(modules), mod.Name)
 		if err := installModule(mod, destDir); err != nil {
 			return fmt.Errorf("could not install module %s: %w", mod.Name, err)
 		}

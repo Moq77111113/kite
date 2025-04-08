@@ -7,15 +7,19 @@ import (
 	"path/filepath"
 
 	"github.com/moq77111113/kite/internal/config"
+	spinner "github.com/moq77111113/kite/internal/vendors"
 	"gopkg.in/yaml.v3"
 )
 
 type FileLoader struct{}
 
 func (h *FileLoader) LoadIndex(config config.Config) (*Registry, error) {
+	var result *Registry
+	err := spinner.WithContext(fmt.Sprintf("Loading registry index from %s", config.Registry), func() error {
+
 	data, err := os.ReadFile(config.Registry)
 	if err != nil {
-		return nil, err
+		return  err
 	}
 
 	var r Registry
@@ -25,14 +29,17 @@ func (h *FileLoader) LoadIndex(config config.Config) (*Registry, error) {
 	case ".yaml", ".yml":
 		err = yaml.Unmarshal(data, &r)
 	default:
-		return nil, fmt.Errorf("unsupported file type: %s", config.Registry)
+		return fmt.Errorf("unsupported file type: %s", config.Registry)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("invalid registry format: %w", err)
+		return  fmt.Errorf("invalid registry format: %w", err)
 	}
 
-	return &r, nil
+	result = &r
+	return nil
+	})
+	return result, err
 }
 
 
@@ -42,7 +49,9 @@ func (h *FileLoader) LoadModules(config config.Config, names []string) ([]*Modul
 		return modules, nil
 	}
 
-	// look for a "__registry__" directory in the config.registry parent dir
+	s := spinner.StartWithMessage("Loading modules")
+	defer s.Stop()
+
 	parentDir := filepath.Dir(config.Registry)
 	if _, err := os.Stat(filepath.Join(parentDir, "__registry__")); err == nil {
 		config.Registry = filepath.Join(parentDir, "__registry__")
@@ -50,7 +59,8 @@ func (h *FileLoader) LoadModules(config config.Config, names []string) ([]*Modul
 
 	flavorPath := filepath.Join(config.Registry, config.Flavor)
 
-	for _, name := range names {
+	for i, name := range names {
+		s.UpdateMessagef("Loading module %s (%d/%d)", name, i+1, len(names))
 		u := filepath.Join(flavorPath, "modules", name+".json")
 		data, err := os.ReadFile(u)
 		if err != nil {
