@@ -47,11 +47,9 @@ func NewGitClient(repoURL string, gitClient Client) (registry.Client, error) {
 
 // ListTemplates returns all templates from the Git registry
 func (c *GitClient) ListTemplates() ([]registry.TemplateSummary, error) {
-	templatesDir := filepath.Join(c.cachePath, "templates")
-
-	entries, err := os.ReadDir(templatesDir)
+	entries, err := os.ReadDir(c.cachePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read templates directory: %w", err)
+		return nil, fmt.Errorf("failed to read registry directory: %w", err)
 	}
 
 	var templates []registry.TemplateSummary
@@ -60,10 +58,15 @@ func (c *GitClient) ListTemplates() ([]registry.TemplateSummary, error) {
 			continue
 		}
 
-		templatePath := filepath.Join(templatesDir, entry.Name())
+		skipDirs := map[string]bool{".git": true, ".github": true, "docs": true, "examples": true}
+		if skipDirs[entry.Name()] {
+			continue
+		}
+
+		templatePath := filepath.Join(c.cachePath, entry.Name())
 		metadata, err := c.readKiteYAML(templatePath)
 		if err != nil {
-			continue // Skip templates with invalid kite.yaml
+			continue // Skip directories without valid kite.yaml
 		}
 
 		templates = append(templates, registry.TemplateSummary{
@@ -80,8 +83,7 @@ func (c *GitClient) ListTemplates() ([]registry.TemplateSummary, error) {
 
 // GetTemplate returns a specific template by name
 func (c *GitClient) GetTemplate(name string) (*registry.TemplateDetailResponse, error) {
-	templatePath := filepath.Join(c.cachePath, "templates", name)
-
+	templatePath := filepath.Join(c.cachePath, name)
 	if _, err := os.Stat(templatePath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("template %s not found", name)
 	}

@@ -1,54 +1,103 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
-// Config represents the kite.json configuration file
+// Config represents the kite.yaml configuration file
 type Config struct {
-	Version   string              `json:"version"`
-	Registry  string              `json:"registry"`
-	Path      string              `json:"path"`
-	Templates map[string]Template `json:"templates"`
+	Version   string              `yaml:"version"`
+	Registry  string              `yaml:"registry"`
+	Path      string              `yaml:"path"`
+	Templates map[string]Template `yaml:"templates"`
 }
 
 // Template represents an installed template
 type Template struct {
-	Version   string `json:"version"`
-	Installed int64  `json:"installed"`
+	Version   string `yaml:"version"`
+	Installed int64  `yaml:"installed"`
 }
 
 const (
-	DefaultPath    = "./infrastructure"
-	ConfigFileName = "kite.json"
+	DefaultPath        = "./infrastructure"
+	ConfigFileName     = "kite.yaml"
+	GlobalConfigName   = "config.yaml"
 )
 
-// Load reads the kite.json configuration file from the current directory
-func Load() (*Config, error) {
-	configPath := filepath.Join(".", ConfigFileName)
+// GetConfigPath returns the path to the kite config file
+// Priority:
+//   1. --config flag (passed as customPath)
+//   2. ./kite.json in current directory (project-specific)
+//   3. ~/.kite/config.json (global fallback)
+func GetConfigPath(customPath string) string {
+	// 1. Custom path from flag has highest priority
+	if customPath != "" {
+		return customPath
+	}
+
+	// 2. Check for kite.json in current directory (project-specific)
+	projectConfig := filepath.Join(".", ConfigFileName)
+	if _, err := os.Stat(projectConfig); err == nil {
+		return projectConfig
+	}
+
+	// 3. Fallback to global config in ~/.kite/config.json
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		// If can't get home dir, use current directory as last resort
+		return projectConfig
+	}
+
+	return filepath.Join(homeDir, ".kite", GlobalConfigName)
+}
+
+// GetConfigPathForLoad is like GetConfigPath but doesn't create anything
+func GetConfigPathForLoad(customPath string) (string, error) {
+	path := GetConfigPath(customPath)
+
+	// Verify file exists
+	if _, err := os.Stat(path); err != nil {
+		return "", fmt.Errorf("config not found at %s (run 'kite init' first)", path)
+	}
+
+	return path, nil
+}
+
+// Load reads the kite configuration file
+// customPath: optional --config flag value
+func Load(customPath string) (*Config, error) {
+	configPath := GetConfigPath(customPath)
 
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("config not found at %s (run 'kite init' first)", configPath)
 	}
 
 	var config Config
-	if err := json.Unmarshal(data, &config); err != nil {
-		return nil, err
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return nil, fmt.Errorf("invalid config at %s: %w", configPath, err)
 	}
 
 	return &config, nil
 }
 
-// Save writes the configuration to kite.json in the current directory
-func Save(config *Config) error {
-	configPath := filepath.Join(".", ConfigFileName)
+// Save writes the configuration to the config file
+// customPath: optional --config flag value
+func Save(config *Config, customPath string) error {
+	configPath := GetConfigPath(customPath)
 
-	data, err := json.MarshalIndent(config, "", "  ")
+	// Ensure directory exists
+	configDir := filepath.Dir(configPath)
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		return fmt.Errorf("failed to create config directory: %w", err)
+	}
+
+	data, err := yaml.Marshal(config)
 	if err != nil {
 		return err
 	}
@@ -56,15 +105,17 @@ func Save(config *Config) error {
 	return os.WriteFile(configPath, data, 0644)
 }
 
-// Exists checks if kite.json exists in the current directory
-func Exists() bool {
-	configPath := filepath.Join(".", ConfigFileName)
+// Exists checks if kite config file exists
+// customPath: optional --config flag value
+func Exists(customPath string) bool {
+	configPath := GetConfigPath(customPath)
 	_, err := os.Stat(configPath)
 	return err == nil
 }
 
-// Init creates a new kite.json configuration file
-func Init(registry, path string) (*Config, error) {
+// Init creates a new kite configuration file
+// Creates in current directory (./kite.yaml) if --local flag, otherwise in ~/.kite/config.yaml
+func Init(registry, path string, local bool, customPath string) (*Config, error) {
 	if path == "" {
 		path = DefaultPath
 	}
@@ -73,20 +124,28 @@ func Init(registry, path string) (*Config, error) {
 	}
 
 	config := &Config{
-
 		Version:   "1.0.0",
 		Registry:  registry,
 		Path:      path,
 		Templates: make(map[string]Template),
 	}
 
-
 	if err := os.MkdirAll(path, 0755); err != nil {
 		return nil, err
 	}
 
+	// Determine config location
+	var configLocation string
+	if local {
+		// Force local config
+		configLocation = filepath.Join(".", ConfigFileName)
+	} else {
+		// Use normal priority: customPath > global
+		configLocation = customPath
+	}
+
 	// Save the config
-	if err := Save(config); err != nil {
+	if err := Save(config, configLocation); err != nil {
 		return nil, err
 	}
 

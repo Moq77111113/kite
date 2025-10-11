@@ -16,8 +16,9 @@ func showWelcome() {
 }
 
 func promptUpdate(cfg *config.Config) (bool, error) {
+	configPath := config.GetConfigPath("")
 	console.EmptyLine()
-	console.Warning("kite.json already exists")
+	console.Warning(fmt.Sprintf("Config already exists at %s", configPath))
 	console.EmptyLine()
 	console.Print("  Registry: %s\n", console.Cyan(cfg.Registry))
 	console.Print("  Path:     %s\n", console.Cyan(cfg.Path))
@@ -30,8 +31,9 @@ func promptUpdate(cfg *config.Config) (bool, error) {
 }
 
 func showUpdateSuccess(cfg *config.Config, registry, path string) {
+	configPath := config.GetConfigPath("")
 	console.EmptyLine()
-	console.Success("Updated kite.json")
+	console.Success(fmt.Sprintf("Updated config at %s", configPath))
 	console.Print("%s %s\n", console.Green("✓"), fmt.Sprintf("Registry: %s", console.Cyan(registry)))
 	console.Print("%s %s\n", console.Green("✓"), fmt.Sprintf("Path: %s", console.Cyan(path)))
 	if len(cfg.Templates) > 0 {
@@ -42,8 +44,9 @@ func showUpdateSuccess(cfg *config.Config, registry, path string) {
 }
 
 func showCreateSuccess(registry, path string) {
+	configPath := config.GetConfigPath("")
 	console.EmptyLine()
-	console.Success("Created kite.json")
+	console.Success(fmt.Sprintf("Created config at %s", configPath))
 	console.Print("%s %s\n", console.Green("✓"), fmt.Sprintf("Created %s directory", console.Cyan(path)))
 	console.Print("%s %s\n", console.Green("✓"), fmt.Sprintf("Using registry: %s", console.Cyan(registry)))
 	console.EmptyLine()

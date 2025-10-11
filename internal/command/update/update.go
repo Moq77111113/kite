@@ -20,7 +20,7 @@ func NewUpdateCmd() *cobra.Command {
 }
 
 func runUpdate(cmd *cobra.Command, args []string) error {
-	cfg, err := config.Load()
+	cfg, err := config.Load("")
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
@@ -111,5 +111,5 @@ func performUpdates(cfg *config.Config, updates []updateInfo) error {
 		console.Print("  %s %s → %s\n", console.Green("✓"), console.Bold(u.name), console.Green(u.newVersion))
 	}
 
-	return config.Save(cfg)
+	return config.Save(cfg, "")
 }

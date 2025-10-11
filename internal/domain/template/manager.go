@@ -45,7 +45,7 @@ func (m *Manager) Add(name string) error {
 
 	// Update config
 	m.config.AddTemplate(name, template.Version)
-	if err := config.Save(m.config); err != nil {
+	if err := config.Save(m.config, ""); err != nil {
 		return fmt.Errorf("failed to save config: %w", err)
 	}
 
@@ -67,7 +67,7 @@ func (m *Manager) Remove(name string) error {
 
 	// Update config
 	m.config.RemoveTemplate(name)
-	if err := config.Save(m.config); err != nil {
+	if err := config.Save(m.config, ""); err != nil {
 		return fmt.Errorf("failed to save config: %w", err)
 	}
 

@@ -16,7 +16,7 @@ func saveConfig(existing *config.Config, registry, path string) error {
 func updateConfig(cfg *config.Config, registry, path string) error {
 	cfg.Registry = registry
 	cfg.Path = path
-	if err := config.Save(cfg); err != nil {
+	if err := config.Save(cfg, ""); err != nil {
 		return fmt.Errorf("failed to update config: %w", err)
 	}
 	showUpdateSuccess(cfg, registry, path)
@@ -24,7 +24,7 @@ func updateConfig(cfg *config.Config, registry, path string) error {
 }
 
 func createConfig(registry, path string) error {
-	if _, err := config.Init(registry, path); err != nil {
+	if _, err := config.Init(registry, path, false, ""); err != nil {
 		return fmt.Errorf("failed to initialize config: %w", err)
 	}
 	showCreateSuccess(registry, path)
@@ -32,11 +32,11 @@ func createConfig(registry, path string) error {
 }
 
 func loadExisting(force bool) (*config.Config, error) {
-	if !config.Exists() {
+	if !config.Exists("") {
 		return nil, nil
 	}
 
-	existing, err := config.Load()
+	existing, err := config.Load("")
 	if err != nil {
 		return nil, fmt.Errorf("failed to load existing config: %w", err)
 	}

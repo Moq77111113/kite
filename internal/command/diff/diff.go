@@ -22,7 +22,7 @@ func NewDiffCmd() *cobra.Command {
 }
 
 func runDiff(cmd *cobra.Command, args []string) error {
-	cfg, err := config.Load()
+	cfg, err := config.Load("")
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
