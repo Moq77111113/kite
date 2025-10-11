@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/fatih/color"
 	"github.com/moq77111113/kite/internal/container"
+	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +24,8 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(c.Config().Templates) == 0 {
-		fmt.Println("No templates installed")
+		console.EmptyLine()
+		console.Println(console.Dim("No templates installed"))
 		return nil
 	}
 
@@ -34,8 +35,8 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(updates) == 0 {
-		green := color.New(color.FgGreen).SprintFunc()
-		fmt.Printf("%s All templates are up to date\n", green("✓"))
+		console.EmptyLine()
+		console.Success("All templates are up to date")
 		return nil
 	}
 
@@ -50,36 +51,39 @@ type updateInfo struct {
 }
 
 func checkForUpdates(c *container.Container) ([]updateInfo, error) {
-	fmt.Println("Checking for updates...")
-	fmt.Println()
-
 	var updates []updateInfo
 
-	for name, installed := range c.Config().Templates {
-		detail, err := c.Client().GetTemplate(name)
-		if err != nil {
-			color.Yellow("⚠ Could not check updates for %s: %v", name, err)
-			continue
-		}
+	err := console.Spinner("Checking for updates", func() error {
+		for name, installed := range c.Config().Templates {
+			detail, err := c.Client().GetTemplate(name)
+			if err != nil {
+				console.Warning(fmt.Sprintf("Could not check updates for %s: %v", name, err))
+				continue
+			}
 
-		if detail.Version != installed.Version {
-			updates = append(updates, updateInfo{
-				name:       name,
-				oldVersion: installed.Version,
-				newVersion: detail.Version,
-			})
+			if detail.Version != installed.Version {
+				updates = append(updates, updateInfo{
+					name:       name,
+					oldVersion: installed.Version,
+					newVersion: detail.Version,
+				})
+			}
 		}
-	}
+		return nil
+	})
 
-	return updates, nil
+	return updates, err
 }
 
 func displayUpdates(updates []updateInfo) {
-	fmt.Println("Updates available:")
+	console.EmptyLine()
+	console.Header("Updates Available")
+	console.Divider(50)
+	console.EmptyLine()
 	for _, u := range updates {
-		fmt.Printf("  %s: %s → %s\n", u.name, u.oldVersion, u.newVersion)
+		console.Print("  %s %s → %s\n", console.Bold(console.Cyan(u.name)), console.Dim(u.oldVersion), console.Green(u.newVersion))
 	}
-	fmt.Println()
+	console.EmptyLine()
 }
 
 func performUpdates(c *container.Container, updates []updateInfo) error {
@@ -93,14 +97,15 @@ func performUpdates(c *container.Container, updates []updateInfo) error {
 	}
 
 	if !confirm {
-		fmt.Println("Update cancelled")
+		console.EmptyLine()
+		console.Println(console.Dim("Update cancelled"))
 		return nil
 	}
 
-	green := color.New(color.FgGreen).SprintFunc()
+	console.EmptyLine()
 	for _, u := range updates {
 		c.Config().AddTemplate(u.name, u.newVersion)
-		fmt.Printf("%s Updated %s to %s\n", green("✓"), u.name, u.newVersion)
+		console.Print("  %s %s → %s\n", console.Green("✓"), console.Bold(u.name), console.Green(u.newVersion))
 	}
 
 	return nil

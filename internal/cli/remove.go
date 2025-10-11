@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 
-	"github.com/fatih/color"
 	"github.com/moq77111113/kite/internal/container"
+	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
 
@@ -28,9 +28,8 @@ func runRemove(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	green := color.New(color.FgGreen).SprintFunc()
-	fmt.Printf("%s Removed %s\n", green("✓"), name)
-	fmt.Printf("%s Updated kite.json\n", green("✓"))
+	console.EmptyLine()
+	console.Success(fmt.Sprintf("Removed %s", name))
 
 	return nil
 }

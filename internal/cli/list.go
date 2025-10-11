@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/moq77111113/kite/internal/container"
 	"github.com/moq77111113/kite/internal/registry"
+	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
 
@@ -34,28 +34,28 @@ func runList(cmd *cobra.Command, args []string) error {
 }
 
 func displayTemplates(c *container.Container, templates []registry.TemplateSummary) {
-	fmt.Println("Available templates:")
-	fmt.Println()
-
-	green := color.New(color.FgGreen).SprintFunc()
-	red := color.New(color.FgRed).SprintFunc()
-	cyan := color.New(color.FgCyan).SprintFunc()
-	gray := color.New(color.FgHiBlack).SprintFunc()
+	console.EmptyLine()
+	console.Header("Available Templates")
+	console.Divider(50)
+	console.EmptyLine()
 
 	for _, t := range templates {
 		_, installed := c.Config().GetTemplate(t.Name)
-		status := red("✗ Not installed")
+
+		statusIcon := console.Dim("○")
 		if installed {
-			status = green("✓ Installed")
+			statusIcon = console.Green("●")
 		}
 
-		fmt.Printf("  %s (%s) - %s\n", cyan(t.Name), t.Version, t.Description)
+		console.Print("  %s %s %s\n", statusIcon, console.Bold(console.Cyan(t.Name)), console.Dim(fmt.Sprintf("v%s", t.Version)))
+		console.Print("     %s\n", t.Description)
 		if len(t.Tags) > 0 {
-			fmt.Printf("    Tags: %s\n", gray(strings.Join(t.Tags, ", ")))
+			console.Print("     %s\n", console.Gray(strings.Join(t.Tags, " · ")))
 		}
-		fmt.Printf("    %s\n", status)
-		fmt.Println()
+		console.EmptyLine()
 	}
 
-	fmt.Println("Run 'kite add <template>' to install")
+	console.Divider(50)
+	console.Info("Run 'kite add <template>' to install")
+	console.EmptyLine()
 }

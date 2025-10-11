@@ -7,6 +7,7 @@ import (
 	"github.com/moq77111113/kite/internal/git"
 	"github.com/moq77111113/kite/internal/registry"
 	"github.com/moq77111113/kite/internal/template"
+	"github.com/moq77111113/kite/pkg/console"
 )
 
 // Container holds all application dependencies
@@ -56,8 +57,7 @@ func createRegistryClient(registryURL string) registry.Client {
 		gitClient := git.NewClient()
 		client, err := registry.NewGitClient(registryURL, gitClient)
 		if err != nil {
-			// Fall back to mock client on error
-			fmt.Printf("Warning: Failed to initialize Git registry, using mock: %v\n", err)
+			console.Warning(fmt.Sprintf("Failed to initialize Git registry, using mock: %v", err))
 			return registry.NewMockClient()
 		}
 		return client
@@ -72,18 +72,18 @@ func createRegistryClient(registryURL string) registry.Client {
 			// It's a local Git repo, use GitClient
 			client, err := registry.NewGitClient(registryURL, gitClient)
 			if err != nil {
-				fmt.Printf("Warning: Failed to initialize local Git registry, using mock: %v\n", err)
+				console.Warning(fmt.Sprintf("Failed to initialize local Git registry, using mock: %v", err))
 				return registry.NewMockClient()
 			}
 			return client
 		}
 		// TODO: Implement file-based LocalClient
-		fmt.Println("Warning: File-based local registry not yet implemented, using mock")
+		console.Warning("File-based local registry not yet implemented, using mock")
 		return registry.NewMockClient()
 
 	default:
 		// Unknown type, use mock client
-		fmt.Println("Warning: Unknown registry type, using mock")
+		console.Warning("Unknown registry type, using mock")
 		return registry.NewMockClient()
 	}
 }

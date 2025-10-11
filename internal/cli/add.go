@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/fatih/color"
 	"github.com/moq77111113/kite/internal/container"
+	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
 
@@ -24,16 +24,17 @@ func runAdd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
 
-	green := color.New(color.FgGreen).SprintFunc()
-	yellow := color.New(color.FgYellow).SprintFunc()
-
+	console.EmptyLine()
 	installed := 0
-	for _, name := range args {
+	for i, name := range args {
+		if i > 0 {
+			console.EmptyLine()
+		}
 		if err := addTemplate(c, name); err != nil {
 			if err.Error() == fmt.Sprintf("template %s is already installed", name) {
-				fmt.Printf("%s %s is already installed\n", yellow("⚠"), name)
+				console.Print("  %s %s\n", console.Yellow("⚠"), console.Yellow("Already installed"))
 			} else {
-				color.Red("✗ Failed to add %s: %v", name, err)
+				console.Print("  %s %s\n", console.Red("✗"), console.Red("Failed: %v", err))
 			}
 			continue
 		}
@@ -41,23 +42,30 @@ func runAdd(cmd *cobra.Command, args []string) error {
 	}
 
 	if installed > 0 {
-		fmt.Printf("\n%s Successfully installed %d template(s)\n", green("✓"), installed)
+		console.EmptyLine()
+		console.Success(fmt.Sprintf("Successfully installed %d template(s)", installed))
 	}
 
 	return nil
 }
 
 func addTemplate(c *container.Container, name string) error {
-	fmt.Printf("⠿ Fetching %s from registry...\n", name)
+	var installErr error
 
-	if err := c.Manager().Add(name); err != nil {
+	err := console.Spinner(fmt.Sprintf("Fetching %s", console.Cyan(name)), func() error {
+		installErr = c.Manager().Add(name)
+		return installErr
+	})
+
+	if err != nil || installErr != nil {
+		if installErr != nil {
+			return installErr
+		}
 		return err
 	}
 
-	green := color.New(color.FgGreen).SprintFunc()
 	destPath := filepath.Join(c.Config().Path, name)
-	fmt.Printf("%s Installed to %s\n", green("✓"), destPath)
-	fmt.Printf("%s Updated kite.json\n", green("✓"))
+	console.Print("  %s %s → %s\n", console.Green("✓"), console.Bold(name), destPath)
 
 	return nil
 }

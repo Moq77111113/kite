@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/fatih/color"
 	"github.com/moq77111113/kite/internal/container"
 	"github.com/moq77111113/kite/internal/registry"
+	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
 
@@ -45,33 +45,35 @@ func runDiff(cmd *cobra.Command, args []string) error {
 }
 
 func displayDiff(c *container.Container, name, localVersion string, detail *registry.TemplateDetailResponse) {
-	green := color.New(color.FgGreen).SprintFunc()
-	yellow := color.New(color.FgYellow).SprintFunc()
-	cyan := color.New(color.FgCyan).SprintFunc()
-
-	fmt.Printf("Template: %s\n", cyan(name))
-	fmt.Printf("Local version:    %s\n", localVersion)
-	fmt.Printf("Registry version: %s\n", detail.Version)
-	fmt.Println()
+	console.EmptyLine()
+	console.Print("%s %s\n", console.Bold("Template:"), console.Cyan(name))
+	console.Divider(50)
+	console.EmptyLine()
+	console.Print("  Local:    %s\n", console.Dim(localVersion))
+	console.Print("  Registry: %s\n", console.Cyan(detail.Version))
+	console.EmptyLine()
 
 	if localVersion == detail.Version {
-		fmt.Printf("%s Template is up to date\n", green("✓"))
+		console.Success("Template is up to date")
 		return
 	}
 
-	fmt.Printf("%s Update available: %s → %s\n", yellow("⚠"), localVersion, detail.Version)
-	fmt.Println()
+	console.Warning(fmt.Sprintf("Update available: %s → %s", localVersion, detail.Version))
+	console.EmptyLine()
+	console.Header("Changes:")
+	console.EmptyLine()
 
-	fmt.Println("Files in registry version:")
 	for _, file := range detail.Files {
 		localPath := filepath.Join(c.Config().Path, name, file.Path)
 		if _, err := os.Stat(localPath); os.IsNotExist(err) {
-			fmt.Printf("  %s %s (new)\n", green("+"), file.Path)
+			console.Print("  %s %s %s\n", console.Green("+"), file.Path, console.Dim("(new)"))
 		} else {
-			fmt.Printf("  %s %s (modified)\n", yellow("~"), file.Path)
+			console.Print("  %s %s %s\n", console.Yellow("~"), file.Path, console.Dim("(modified)"))
 		}
 	}
 
-	fmt.Println()
-	fmt.Println("Run 'kite update' to update this template")
+	console.EmptyLine()
+	console.Divider(50)
+	console.Info("Run 'kite update' to apply changes")
+	console.EmptyLine()
 }
