@@ -17,8 +17,8 @@ type Config struct {
 
 // Template represents an installed template
 type Template struct {
-	Version   string    `json:"version"`
-	Installed time.Time `json:"installed"`
+	Version   string `json:"version"`
+	Installed int64  `json:"installed"`
 }
 
 const (
@@ -99,7 +99,7 @@ func (c *Config) AddTemplate(name, version string) {
 	}
 	c.Templates[name] = Template{
 		Version:   version,
-		Installed: time.Now(),
+		Installed: time.Now().Unix(),
 	}
 }
 

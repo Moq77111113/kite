@@ -1,7 +1,10 @@
 package container
 
 import (
+	"fmt"
+
 	"github.com/moq77111113/kite/internal/config"
+	"github.com/moq77111113/kite/internal/git"
 	"github.com/moq77111113/kite/internal/registry"
 	"github.com/moq77111113/kite/internal/template"
 )
@@ -28,10 +31,7 @@ func New() (*Container, error) {
 // NewWithConfig creates a container with a provided config
 func NewWithConfig(cfg *config.Config) *Container {
 	// Create registry client based on config
-	var client registry.Client
-	// TODO: Check if registry is URL or file path
-	// For now, use mock client
-	client = registry.NewMockClient()
+	client := createRegistryClient(cfg.Registry)
 
 	// Create installer
 	installer := template.NewInstaller()
@@ -44,6 +44,47 @@ func NewWithConfig(cfg *config.Config) *Container {
 		client:    client,
 		installer: installer,
 		manager:   manager,
+	}
+}
+
+// createRegistryClient creates the appropriate registry client based on registry URL
+func createRegistryClient(registryURL string) registry.Client {
+	registryType := registry.DetectRegistryType(registryURL)
+
+	switch registryType {
+	case registry.RegistryTypeGit:
+		gitClient := git.NewClient()
+		client, err := registry.NewGitClient(registryURL, gitClient)
+		if err != nil {
+			// Fall back to mock client on error
+			fmt.Printf("Warning: Failed to initialize Git registry, using mock: %v\n", err)
+			return registry.NewMockClient()
+		}
+		return client
+
+	case registry.RegistryTypeHTTP:
+		return registry.NewHTTPClient(registryURL)
+
+	case registry.RegistryTypeLocal:
+		// Check if it's a Git repository
+		gitClient := git.NewClient()
+		if gitClient.IsCloned(registryURL) {
+			// It's a local Git repo, use GitClient
+			client, err := registry.NewGitClient(registryURL, gitClient)
+			if err != nil {
+				fmt.Printf("Warning: Failed to initialize local Git registry, using mock: %v\n", err)
+				return registry.NewMockClient()
+			}
+			return client
+		}
+		// TODO: Implement file-based LocalClient
+		fmt.Println("Warning: File-based local registry not yet implemented, using mock")
+		return registry.NewMockClient()
+
+	default:
+		// Unknown type, use mock client
+		fmt.Println("Warning: Unknown registry type, using mock")
+		return registry.NewMockClient()
 	}
 }
 
