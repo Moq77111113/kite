@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -22,9 +23,8 @@ type Template struct {
 }
 
 const (
-	DefaultRegistry = "https://api.kite.sh"
-	DefaultPath     = "./infrastructure"
-	ConfigFileName  = "kite.json"
+	DefaultPath    = "./infrastructure"
+	ConfigFileName = "kite.json"
 )
 
 // Load reads the kite.json configuration file from the current directory
@@ -65,11 +65,11 @@ func Exists() bool {
 
 // Init creates a new kite.json configuration file
 func Init(registry, path string) (*Config, error) {
-	if registry == "" {
-		registry = DefaultRegistry
-	}
 	if path == "" {
 		path = DefaultPath
+	}
+	if registry == "" {
+		return nil, fmt.Errorf("registry cannot be empty")
 	}
 
 	config := &Config{
