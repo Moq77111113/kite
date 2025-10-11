@@ -1,10 +1,9 @@
-package initialize
+package initcmd
 
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/config"
-	"github.com/moq77111113/kite/internal/prompt"
+	"github.com/moq77111113/kite/internal/domain/config"
 	"github.com/moq77111113/kite/pkg/console"
 )
 
@@ -27,7 +26,7 @@ func promptUpdate(cfg *config.Config) (bool, error) {
 	}
 	console.EmptyLine()
 
-	return prompt.AskConfirm("Do you want to update the configuration?", false)
+	return AskConfirm("Do you want to update the configuration?", false)
 }
 
 func showUpdateSuccess(cfg *config.Config, registry, path string) {

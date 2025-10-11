@@ -1,10 +1,12 @@
-package cli
+package update
 
 import (
 	"fmt"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/moq77111113/kite/internal/container"
+	registryv1 "github.com/moq77111113/kite/api/registry/v1"
+	"github.com/moq77111113/kite/internal/domain/config"
+	"github.com/moq77111113/kite/internal/domain/registry"
 	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
@@ -18,18 +20,19 @@ func NewUpdateCmd() *cobra.Command {
 }
 
 func runUpdate(cmd *cobra.Command, args []string) error {
-	c, err := container.New()
+	cfg, err := config.Load()
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
 
-	if len(c.Config().Templates) == 0 {
+	if len(cfg.Templates) == 0 {
 		console.EmptyLine()
 		console.Println(console.Dim("No templates installed"))
 		return nil
 	}
 
-	updates, err := checkForUpdates(c)
+	client := registry.NewClient(cfg.Registry)
+	updates, err := checkForUpdates(cfg, client)
 	if err != nil {
 		return err
 	}
@@ -41,7 +44,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 	}
 
 	displayUpdates(updates)
-	return performUpdates(c, updates)
+	return performUpdates(cfg, updates)
 }
 
 type updateInfo struct {
@@ -50,12 +53,12 @@ type updateInfo struct {
 	newVersion string
 }
 
-func checkForUpdates(c *container.Container) ([]updateInfo, error) {
+func checkForUpdates(cfg *config.Config, client registryv1.Client) ([]updateInfo, error) {
 	var updates []updateInfo
 
 	err := console.Spinner("Checking for updates", func() error {
-		for name, installed := range c.Config().Templates {
-			detail, err := c.Client().GetTemplate(name)
+		for name, installed := range cfg.Templates {
+			detail, err := client.GetTemplate(name)
 			if err != nil {
 				console.Warning(fmt.Sprintf("Could not check updates for %s: %v", name, err))
 				continue
@@ -86,7 +89,7 @@ func displayUpdates(updates []updateInfo) {
 	console.EmptyLine()
 }
 
-func performUpdates(c *container.Container, updates []updateInfo) error {
+func performUpdates(cfg *config.Config, updates []updateInfo) error {
 	var confirm bool
 	prompt := &survey.Confirm{
 		Message: fmt.Sprintf("Update %d template(s)?", len(updates)),
@@ -104,9 +107,9 @@ func performUpdates(c *container.Container, updates []updateInfo) error {
 
 	console.EmptyLine()
 	for _, u := range updates {
-		c.Config().AddTemplate(u.name, u.newVersion)
+		cfg.AddTemplate(u.name, u.newVersion)
 		console.Print("  %s %s → %s\n", console.Green("✓"), console.Bold(u.name), console.Green(u.newVersion))
 	}
 
-	return nil
+	return config.Save(cfg)
 }

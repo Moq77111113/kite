@@ -1,10 +1,9 @@
-package initialize
+package initcmd
 
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/config"
-	"github.com/moq77111113/kite/internal/prompt"
+	"github.com/moq77111113/kite/internal/domain/config"
 )
 
 // Options contains initialization options
@@ -39,12 +38,12 @@ func getValues(opts Options, existing *config.Config) (string, string, error) {
 func interactive(existing *config.Config) (string, string, error) {
 	showWelcome()
 
-	registryType, err := prompt.AskRegistryType()
+	registryType, err := AskRegistryType()
 	if err != nil {
 		return "", "", err
 	}
 
-	registry, err := prompt.AskRegistryURL(registryType)
+	registry, err := AskRegistryURL(registryType)
 	if err != nil {
 		return "", "", err
 	}
@@ -54,7 +53,7 @@ func interactive(existing *config.Config) (string, string, error) {
 		defaultPath = existing.Path
 	}
 
-	path, err := prompt.AskPath(defaultPath)
+	path, err := AskPath(defaultPath)
 	if err != nil {
 		return "", "", err
 	}
@@ -82,4 +81,3 @@ func fromOptions(opts Options, existing *config.Config) (string, string, error) 
 
 	return registry, path, nil
 }
-

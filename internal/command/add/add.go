@@ -1,10 +1,12 @@
-package cli
+package add
 
 import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/moq77111113/kite/internal/container"
+	"github.com/moq77111113/kite/internal/domain/config"
+	"github.com/moq77111113/kite/internal/domain/registry"
+	"github.com/moq77111113/kite/internal/domain/template"
 	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
@@ -19,10 +21,13 @@ func NewAddCmd() *cobra.Command {
 }
 
 func runAdd(cmd *cobra.Command, args []string) error {
-	c, err := container.New()
+	cfg, err := config.Load()
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
+
+	client := registry.NewClient(cfg.Registry)
+	mgr := template.NewManager(cfg, client)
 
 	console.EmptyLine()
 	installed := 0
@@ -30,7 +35,7 @@ func runAdd(cmd *cobra.Command, args []string) error {
 		if i > 0 {
 			console.EmptyLine()
 		}
-		if err := addTemplate(c, name); err != nil {
+		if err := addTemplate(mgr, cfg, name); err != nil {
 			if err.Error() == fmt.Sprintf("template %s is already installed", name) {
 				console.Print("  %s %s\n", console.Yellow("⚠"), console.Yellow("Already installed"))
 			} else {
@@ -49,11 +54,11 @@ func runAdd(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func addTemplate(c *container.Container, name string) error {
+func addTemplate(mgr *template.Manager, cfg *config.Config, name string) error {
 	var installErr error
 
 	err := console.Spinner(fmt.Sprintf("Fetching %s", console.Cyan(name)), func() error {
-		installErr = c.Manager().Add(name)
+		installErr = mgr.Add(name)
 		return installErr
 	})
 
@@ -64,7 +69,7 @@ func addTemplate(c *container.Container, name string) error {
 		return err
 	}
 
-	destPath := filepath.Join(c.Config().Path, name)
+	destPath := filepath.Join(cfg.Path, name)
 	console.Print("  %s %s → %s\n", console.Green("✓"), console.Bold(name), destPath)
 
 	return nil

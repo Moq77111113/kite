@@ -1,9 +1,7 @@
-package cli
+package initcmd
 
 import (
 	"github.com/spf13/cobra"
-
-	"github.com/moq77111113/kite/internal/initialize"
 )
 
 func NewInitCmd() *cobra.Command {
@@ -21,7 +19,7 @@ func NewInitCmd() *cobra.Command {
 }
 
 func runInit(cmd *cobra.Command, args []string) error {
-	return initialize.Run(initialize.Options{
+	return Run(Options{
 		Registry: cmd.Flag("registry").Value.String(),
 		Path:     cmd.Flag("path").Value.String(),
 		Force:    cmd.Flag("force").Value.String() == "true",

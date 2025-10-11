@@ -1,12 +1,13 @@
-package cli
+package diff
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/moq77111113/kite/internal/container"
-	"github.com/moq77111113/kite/internal/registry"
+	"github.com/moq77111113/kite/internal/domain/config"
+	"github.com/moq77111113/kite/internal/domain/registry"
+registryv1 "github.com/moq77111113/kite/api/registry/v1"
 	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
@@ -21,7 +22,7 @@ func NewDiffCmd() *cobra.Command {
 }
 
 func runDiff(cmd *cobra.Command, args []string) error {
-	c, err := container.New()
+	cfg, err := config.Load()
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
@@ -29,22 +30,23 @@ func runDiff(cmd *cobra.Command, args []string) error {
 	name := args[0]
 
 	// Check if installed
-	installed, ok := c.Config().GetTemplate(name)
+	installed, ok := cfg.GetTemplate(name)
 	if !ok {
 		return fmt.Errorf("template %s is not installed", name)
 	}
 
 	// Fetch from registry
-	detail, err := c.Client().GetTemplate(name)
+	client := registry.NewClient(cfg.Registry)
+	detail, err := client.GetTemplate(name)
 	if err != nil {
 		return fmt.Errorf("failed to fetch template from registry: %w", err)
 	}
 
-	displayDiff(c, name, installed.Version, detail)
+	displayDiff(cfg, name, installed.Version, detail)
 	return nil
 }
 
-func displayDiff(c *container.Container, name, localVersion string, detail *registry.TemplateDetailResponse) {
+func displayDiff(cfg *config.Config, name, localVersion string, detail *registryv1.TemplateDetailResponse) {
 	console.EmptyLine()
 	console.Print("%s %s\n", console.Bold("Template:"), console.Cyan(name))
 	console.Divider(50)
@@ -64,7 +66,7 @@ func displayDiff(c *container.Container, name, localVersion string, detail *regi
 	console.EmptyLine()
 
 	for _, file := range detail.Files {
-		localPath := filepath.Join(c.Config().Path, name, file.Path)
+		localPath := filepath.Join(cfg.Path, name, file.Path)
 		if _, err := os.Stat(localPath); os.IsNotExist(err) {
 			console.Print("  %s %s %s\n", console.Green("+"), file.Path, console.Dim("(new)"))
 		} else {

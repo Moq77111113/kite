@@ -3,13 +3,13 @@ package main
 import (
 	"os"
 
-	"github.com/moq77111113/kite/internal/cli"
+	"github.com/moq77111113/kite/internal/command/root"
 )
 
 func main() {
-	root := cli.NewRootCmd()
+	rootCmd := root.NewRootCmd()
 
-	if err := root.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }

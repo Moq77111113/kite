@@ -1,11 +1,12 @@
-package cli
+package list
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/moq77111113/kite/internal/container"
-	"github.com/moq77111113/kite/internal/registry"
+	"github.com/moq77111113/kite/internal/domain/config"
+	"github.com/moq77111113/kite/internal/domain/registry"
+registryv1 "github.com/moq77111113/kite/api/registry/v1"
 	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
@@ -19,28 +20,29 @@ func NewListCmd() *cobra.Command {
 }
 
 func runList(cmd *cobra.Command, args []string) error {
-	c, err := container.New()
+	cfg, err := config.Load()
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
 
-	templates, err := c.Client().ListTemplates()
+	client := registry.NewClient(cfg.Registry)
+	templates, err := client.ListTemplates()
 	if err != nil {
 		return fmt.Errorf("failed to fetch templates: %w", err)
 	}
 
-	displayTemplates(c, templates)
+	displayTemplates(cfg, templates)
 	return nil
 }
 
-func displayTemplates(c *container.Container, templates []registry.TemplateSummary) {
+func displayTemplates(cfg *config.Config, templates []registryv1.TemplateSummary) {
 	console.EmptyLine()
 	console.Header("Available Templates")
 	console.Divider(50)
 	console.EmptyLine()
 
 	for _, t := range templates {
-		_, installed := c.Config().GetTemplate(t.Name)
+		_, installed := cfg.GetTemplate(t.Name)
 
 		statusIcon := console.Dim("○")
 		if installed {

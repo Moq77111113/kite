@@ -1,9 +1,9 @@
-package initialize
+package initcmd
 
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/config"
+	"github.com/moq77111113/kite/internal/domain/config"
 )
 
 func saveConfig(existing *config.Config, registry, path string) error {
