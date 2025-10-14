@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -28,15 +29,32 @@ func (s *Server) healthCheck(w http.ResponseWriter, r *http.Request) {
 
 // listTemplates returns all available templates from the registry
 func (s *Server) listTemplates(w http.ResponseWriter, r *http.Request) {
-	respondJSON(w, map[string]any{
-		"templates": []any{},
+	templates, err := s.client.ListTemplates()
+	if err != nil {
+		respondError(w, fmt.Sprintf("Failed to fetch templates: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	respondJSON(w, map[string]interface{}{
+		"templates": templates,
 	}, http.StatusOK)
 }
 
-// getTemplate returns details for a specific template
+// getTemplate returns details for a specific template including files
 func (s *Server) getTemplate(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
 
-	respondError(w, "Template fetching not implemented yet: "+name, http.StatusNotImplemented)
+	if name == "" {
+		respondError(w, "Template name is required", http.StatusBadRequest)
+		return
+	}
+
+	template, err := s.client.GetTemplate(name)
+	if err != nil {
+		respondError(w, fmt.Sprintf("Template '%s' not found: %v", name, err), http.StatusNotFound)
+		return
+	}
+
+	respondJSON(w, template, http.StatusOK)
 }
