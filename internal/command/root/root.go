@@ -6,6 +6,7 @@ import (
 	initcmd "github.com/moq77111113/kite/internal/command/init"
 	"github.com/moq77111113/kite/internal/command/list"
 	"github.com/moq77111113/kite/internal/command/remove"
+	"github.com/moq77111113/kite/internal/command/serve"
 	"github.com/moq77111113/kite/internal/command/update"
 	"github.com/spf13/cobra"
 )
@@ -24,6 +25,7 @@ Pull templates from a registry.`,
 	cmd.AddCommand(remove.NewRemoveCmd())
 	cmd.AddCommand(update.NewUpdateCmd())
 	cmd.AddCommand(diff.NewDiffCmd())
+	cmd.AddCommand(serve.NewServeCmd())
 
 	return cmd
 }
