@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/moq77111113/kite/internal/domain/config"
-	"github.com/moq77111113/kite/api/registry/v1"
+	"github.com/moq77111113/kite/internal/domain/registry"
+	"github.com/moq77111113/kite/internal/infra/persistence/config"
 )
 
 // Manager handles template operations

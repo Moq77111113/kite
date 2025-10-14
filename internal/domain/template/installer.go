@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/moq77111113/kite/api/registry/v1"
+	"github.com/moq77111113/kite/internal/domain/registry"
 )
 
 // Installer handles installing templates to the filesystem
