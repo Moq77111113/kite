@@ -19,6 +19,8 @@ func NewRootCmd() *cobra.Command {
 Pull templates from a registry.`,
 	}
 
+	cmd.PersistentFlags().StringP("config", "c", "", "Config file path (default: ./kite.yaml or ~/.kite/config.yaml)")
+
 	cmd.AddCommand(initcmd.NewInitCmd())
 	cmd.AddCommand(add.NewAddCmd())
 	cmd.AddCommand(list.NewListCmd())

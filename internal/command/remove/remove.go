@@ -3,7 +3,7 @@ package remove
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/domain/config"
+	"github.com/moq77111113/kite/internal/command/cmdutil"
 	"github.com/moq77111113/kite/internal/domain/registry"
 	"github.com/moq77111113/kite/internal/domain/template"
 	"github.com/moq77111113/kite/pkg/console"
@@ -20,7 +20,7 @@ func NewRemoveCmd() *cobra.Command {
 }
 
 func runRemove(cmd *cobra.Command, args []string) error {
-	cfg, err := config.Load("")
+	cfg, err := cmdutil.LoadConfig(cmd)
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
