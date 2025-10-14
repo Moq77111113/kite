@@ -1,4 +1,4 @@
-.PHONY: build install test clean run dev
+.PHONY: build install test clean run dev kite
 
 # Binary name
 BINARY_NAME=kite
