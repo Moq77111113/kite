@@ -1,4 +1,4 @@
-import { getTagColor } from "@/lib/utils";
+import { getAvatarNumber } from "@/lib/utils";
 import type { TemplateSummary } from "@/types/template";
 import { Link } from "@tanstack/solid-router";
 
@@ -8,6 +8,7 @@ interface TemplateCardProps {
 
 export default function TemplateCard(props: TemplateCardProps) {
   const primaryTag = () => props.template.tags[0] || "general";
+  const avatarNum = () => getAvatarNumber(primaryTag());
 
   return (
     <Link
@@ -20,9 +21,8 @@ export default function TemplateCard(props: TemplateCardProps) {
           {primaryTag()}
         </span>
         <div
-          class={`size-14 rounded-2xl bg-gradient-to-br ${getTagColor(
-            primaryTag()
-          )} flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform`}
+          class="size-14 rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform"
+          style={{ background: `var(--avatar-${avatarNum()})` }}
         >
           <span class="text-2xl font-bold">
             {props.template.name.charAt(0).toUpperCase()}

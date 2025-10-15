@@ -30,7 +30,7 @@ function CategoryView() {
     <div class="max-w-6xl px-4 sm:px-8 py-8 sm:py-12">
       <header class="mb-10">
         <h1 class="text-3xl sm:text-4xl font-bold text-foreground mb-3 capitalize">
-          {params.name}
+          {params().name}
         </h1>
         <p class="text-base text-muted-foreground mb-6">
           {filteredTemplates().length} template

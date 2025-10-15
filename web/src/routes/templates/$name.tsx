@@ -60,7 +60,8 @@ function TemplateDetail() {
 
           <div
             id="install"
-            class="rounded-xl border border-border bg-card p-5 flex items-center justify-between shadow-sm"
+            class="rounded-xl border border-border p-5 flex items-center justify-between shadow-sm"
+            style={{ background: "var(--code-inline-bg)" }}
           >
             <code class="text-sm font-mono text-card-foreground font-medium break-all">
               kite add {template().name}

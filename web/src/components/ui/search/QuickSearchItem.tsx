@@ -1,4 +1,4 @@
-import { getTagColor } from "@/lib/utils";
+import { getAvatarNumber } from "@/lib/utils";
 import type { TemplateSummary } from "@/types/template";
 
 interface QuickSearchItemProps {
@@ -8,6 +8,8 @@ interface QuickSearchItemProps {
 }
 
 export default function QuickSearchItem(props: QuickSearchItemProps) {
+  const avatarNum = () => getAvatarNumber(props.template.tags[0] || "general");
+
   return (
     <button
       class="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-accent rounded-lg transition-colors text-left group"
@@ -17,9 +19,8 @@ export default function QuickSearchItem(props: QuickSearchItemProps) {
       onClick={() => props.onSelect(props.template)}
     >
       <div
-        class={`size-10 rounded-lg bg-gradient-to-br ${getTagColor(
-          props.template.tags[0] || "general"
-        )} flex items-center justify-center text-white shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform`}
+        class="size-10 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform"
+        style={{ background: `var(--avatar-${avatarNum()})` }}
       >
         <span class="text-lg font-bold">
           {props.template.name.charAt(0).toUpperCase()}

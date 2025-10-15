@@ -7,7 +7,10 @@ interface CodeBlockProps {
 
 export function CodeBlock(props: CodeBlockProps) {
   return (
-    <div class="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+    <div
+      class="rounded-xl border border-border overflow-hidden shadow-sm"
+      style={{ background: "var(--code-bg)" }}
+    >
       <div class="px-5 py-3 border-b border-border bg-muted/30 flex items-center justify-between">
         <span class="text-sm font-semibold text-foreground font-mono">
           {props.filename || "Code"}
