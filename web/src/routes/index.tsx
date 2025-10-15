@@ -1,47 +1,50 @@
-import { createFileRoute } from "@tanstack/solid-router";
+import { createFileRoute, getRouteApi } from "@tanstack/solid-router";
+import { For, createSignal, createMemo } from "solid-js";
+import TemplateCard from "../components/TemplateCard";
+import SearchBar from "../components/SearchBar";
+
+const rootRoute = getRouteApi('__root__')
 
 export const Route = createFileRoute("/")({
   component: Home,
 });
 
 function Home() {
-  return (
-    <div class="flex items-center justify-center min-h-screen px-8">
-      <div class="max-w-2xl text-center">
-        <h1 class="text-4xl font-bold text-foreground mb-4">Welcome to Kite</h1>
-        <p class="text-lg text-muted-foreground mb-8">
-          Fork your infrastructure, don't worship it. Browse templates from the
-          sidebar and copy them into your project as editable code.
-        </p>
+  const data = rootRoute.useLoaderData()
+  const [searchQuery, setSearchQuery] = createSignal("");
 
-        <div class="rounded-lg border border-border bg-card p-6 text-left">
-          <h2 class="text-xl font-semibold text-card-foreground mb-3">
-            Getting Started
-          </h2>
-          <ol class="space-y-2 text-sm text-muted-foreground">
-            <li class="flex gap-3">
-              <span class="font-semibold text-foreground">1.</span>
-              <span>Select a template from the sidebar</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="font-semibold text-foreground">2.</span>
-              <span>Review the template files and README</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="font-semibold text-foreground">3.</span>
-              <span>
-                Copy the
-                <code class="px-1 py-0.5 rounded bg-muted text-muted-foreground">
-                  kite add
-                </code>
-                command
-              </span>
-            </li>
-            <li class="flex gap-3">
-              <span class="font-semibold text-foreground">4.</span>
-              <span>Run it in your project directory</span>
-            </li>
-          </ol>
+  const filteredTemplates = createMemo(() => {
+    const query = searchQuery().toLowerCase();
+    if (!query) return data().templates;
+
+    return data().templates.filter((template) =>
+      template.name.toLowerCase().includes(query) ||
+      template.description?.toLowerCase().includes(query) ||
+      template.tags.some((tag) => tag.toLowerCase().includes(query))
+    );
+  });
+
+  return (
+    <div class="min-h-screen">
+      <div class="max-w-7xl mx-auto px-8 py-12">
+        <div class="mb-10">
+          <h1 class="text-4xl font-bold text-foreground mb-3">Templates</h1>
+          <p class="text-base text-muted-foreground mb-6">
+            Fork your infrastructure, don't worship it. Browse and copy templates into your project as editable code.
+          </p>
+          <div class="max-w-md">
+            <SearchBar
+              value={searchQuery()}
+              onInput={setSearchQuery}
+              placeholder="Search templates..."
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <For each={filteredTemplates()}>
+            {(template) => <TemplateCard template={template} />}
+          </For>
         </div>
       </div>
     </div>

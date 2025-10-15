@@ -1,0 +1,61 @@
+import { createFileRoute } from "@tanstack/solid-router";
+import { For, createMemo, createSignal } from "solid-js";
+import { fetchTemplates } from "../../api/templates";
+import SearchBar from "../../components/SearchBar";
+import TemplateCard from "../../components/TemplateCard";
+
+export const Route = createFileRoute("/categories/$name")({
+  component: CategoryView,
+  loader: async ({ params }) => {
+    const templates = await fetchTemplates();
+    return templates.templates.filter((template) =>
+      template.tags
+        .map((_) => _.toLowerCase())
+        .includes(params.name.toLowerCase())
+    );
+  },
+});
+
+function CategoryView() {
+  const data = Route.useLoaderData();
+  const params = Route.useParams();
+  const [searchQuery, setSearchQuery] = createSignal("");
+
+  const filteredTemplates = createMemo(() => {
+    const query = searchQuery().toLowerCase();
+    if (!query) return data();
+
+    return data().filter((template) =>
+      template.name.toLowerCase().includes(query)
+    );
+  });
+
+  return (
+    <div class="min-h-screen">
+      <div class="max-w-7xl mx-auto px-8 py-12">
+        <div class="mb-10">
+          <h1 class="text-4xl font-bold text-foreground mb-3 capitalize">
+            {params.name}
+          </h1>
+          <p class="text-base text-muted-foreground mb-6">
+            {filteredTemplates().length} template
+            {filteredTemplates().length !== 1 ? "s" : ""} in this category
+          </p>
+          <div class="max-w-md">
+            <SearchBar
+              value={searchQuery()}
+              onInput={setSearchQuery}
+              placeholder="Search in category..."
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <For each={filteredTemplates()}>
+            {(template) => <TemplateCard template={template} />}
+          </For>
+        </div>
+      </div>
+    </div>
+  );
+}

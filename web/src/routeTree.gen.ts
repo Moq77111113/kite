@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TemplatesNameRouteImport } from './routes/templates/$name'
+import { Route as CategoriesNameRouteImport } from './routes/categories/$name'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,30 +23,39 @@ const TemplatesNameRoute = TemplatesNameRouteImport.update({
   path: '/templates/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriesNameRoute = CategoriesNameRouteImport.update({
+  id: '/categories/$name',
+  path: '/categories/$name',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/categories/$name': typeof CategoriesNameRoute
   '/templates/$name': typeof TemplatesNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/categories/$name': typeof CategoriesNameRoute
   '/templates/$name': typeof TemplatesNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/categories/$name': typeof CategoriesNameRoute
   '/templates/$name': typeof TemplatesNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/templates/$name'
+  fullPaths: '/' | '/categories/$name' | '/templates/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/templates/$name'
-  id: '__root__' | '/' | '/templates/$name'
+  to: '/' | '/categories/$name' | '/templates/$name'
+  id: '__root__' | '/' | '/categories/$name' | '/templates/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CategoriesNameRoute: typeof CategoriesNameRoute
   TemplatesNameRoute: typeof TemplatesNameRoute
 }
 
@@ -65,11 +75,19 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof TemplatesNameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categories/$name': {
+      id: '/categories/$name'
+      path: '/categories/$name'
+      fullPath: '/categories/$name'
+      preLoaderRoute: typeof CategoriesNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CategoriesNameRoute: CategoriesNameRoute,
   TemplatesNameRoute: TemplatesNameRoute,
 }
 export const routeTree = rootRouteImport
