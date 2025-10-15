@@ -1,7 +1,8 @@
 import type { TemplatesResponse, TemplateDetail } from '../types/template'
 
-export async function fetchTemplates(): Promise<TemplatesResponse> {
-  const response = await fetch('/api/templates')
+export async function fetchTemplates(tag?: string): Promise<TemplatesResponse> {
+  const url = tag ? `/api/templates?tag=${encodeURIComponent(tag)}` : '/api/templates'
+  const response = await fetch(url)
 
   if (!response.ok) {
     throw new Error(`Failed to fetch templates: ${response.statusText}`)

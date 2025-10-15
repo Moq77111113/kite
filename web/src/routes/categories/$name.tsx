@@ -7,12 +7,8 @@ import TemplateCard from "@/components/features/TemplateCard";
 export const Route = createFileRoute("/categories/$name")({
   component: CategoryView,
   loader: async ({ params }) => {
-    const templates = await fetchTemplates();
-    return templates.templates.filter((template) =>
-      template.tags
-        .map((_) => _.toLowerCase())
-        .includes(params.name.toLowerCase())
-    );
+    const templates = await fetchTemplates(params.name);
+    return templates.templates;
   },
 });
 

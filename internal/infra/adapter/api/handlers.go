@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/gorilla/mux"
+	"github.com/moq77111113/kite/internal/domain/registry"
 )
 
 // respondJSON writes a JSON response with the given status code
@@ -33,6 +35,17 @@ func (s *Server) listTemplates(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondError(w, fmt.Sprintf("Failed to fetch templates: %v", err), http.StatusInternalServerError)
 		return
+	}
+
+	tag := r.URL.Query().Get("tag")
+	if tag != "" {
+		filtered := make([]registry.TemplateSummary, 0)
+		for _, t := range templates {
+			if slices.Contains(t.Tags, tag) {
+				filtered = append(filtered, t)
+			}
+		}
+		templates = filtered
 	}
 
 	respondJSON(w, map[string]any{
