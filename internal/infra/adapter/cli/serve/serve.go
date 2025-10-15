@@ -3,9 +3,9 @@ package serve
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/infra/adapter/cli/cmdutil"
 	"github.com/moq77111113/kite/internal/application/template"
 	"github.com/moq77111113/kite/internal/infra/adapter/api"
+	"github.com/moq77111113/kite/internal/infra/adapter/cli/cmdutil"
 	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
 )
@@ -28,6 +28,9 @@ func NewServeCmd() *cobra.Command {
 
 			console.EmptyLine()
 			console.Success("Kite server starting...")
+			console.EmptyLine()
+			console.Print("  %s\n", console.Cyan("Web UI:"))
+			console.Print("    http://localhost:%s/\n", port)
 			console.EmptyLine()
 			console.Print("  %s\n", console.Cyan("API Endpoints:"))
 			console.Print("    http://localhost:%s/api/templates\n", port)

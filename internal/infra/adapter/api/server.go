@@ -1,10 +1,12 @@
 package api
 
 import (
+	"io/fs"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/moq77111113/kite/internal/application/template"
+	"github.com/moq77111113/kite/web"
 )
 
 // Server handles HTTP requests for the Kite API and web UI
@@ -30,7 +32,15 @@ func (s *Server) setupRoutes() {
 	api.HandleFunc("/templates", s.listTemplates).Methods("GET")
 	api.HandleFunc("/templates/{name}", s.getTemplate).Methods("GET")
 
-	s.router.HandleFunc("/", s.healthCheck).Methods("GET")
+	staticFS, err := fs.Sub(web.DistFS, "dist")
+	if err != nil {
+		panic("failed to load embedded web UI: " + err.Error())
+	}
+
+	s.router.PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fileServer := http.FileServer(http.FS(staticFS))
+		fileServer.ServeHTTP(w, r)
+	}))
 }
 
 func (s *Server) Start(port string) error {
