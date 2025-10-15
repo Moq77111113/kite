@@ -37,16 +37,9 @@ export function SectionNav(props: SectionNavProps) {
     onCleanup(() => observer.disconnect());
   });
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
   return (
     <nav class="sticky top-24 space-y-2">
-      <div class="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+      <div class="text-xs font-semibold text-muted-foreground mb-3 tracking-wider">
         On this page
       </div>
       <div class="relative">
@@ -55,9 +48,9 @@ export function SectionNav(props: SectionNavProps) {
           <For each={props.sections}>
             {(section) => (
               <li class="relative">
-                <button
-                  onClick={() => scrollToSection(section.id)}
-                  class={`cursor-pointer block pl-3 text-sm transition-colors text-left w-full ${
+                <a
+                  href={`#${section.id}`}
+                  class={`cursor-pointer block pl-3 text-sm transition-colors ${
                     activeSection() === section.id
                       ? "text-foreground font-medium"
                       : "text-muted-foreground hover:text-foreground"
@@ -71,7 +64,7 @@ export function SectionNav(props: SectionNavProps) {
                     }`}
                   />
                   {section.label}
-                </button>
+                </a>
               </li>
             )}
           </For>

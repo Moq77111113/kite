@@ -3,8 +3,8 @@ import { SectionNav } from "@/components/features/SectionNav";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { createFileRoute } from "@tanstack/solid-router";
-import { For, Show, createMemo } from "solid-js";
 import { marked } from "marked";
+import { For, Show, createMemo } from "solid-js";
 
 export const Route = createFileRoute("/templates/$name")({
   loader: ({ params }) => fetchTemplate(params.name),
@@ -73,7 +73,10 @@ function TemplateDetail() {
           <section id="readme" class="mb-10">
             <h2 class="text-2xl font-bold text-foreground mb-5">README</h2>
             <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
-              <div class="prose prose-slate dark:prose-invert max-w-none" innerHTML={renderedReadme()} />
+              <div
+                class="prose prose-slate dark:prose-invert max-w-none"
+                innerHTML={renderedReadme()}
+              />
             </div>
           </section>
         </Show>
