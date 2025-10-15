@@ -18,7 +18,7 @@ export default function ViewModeToggle(props: ViewModeToggleProps) {
         title="List view"
       >
         <svg
-          class="w-4 h-4"
+          class="size-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -41,7 +41,7 @@ export default function ViewModeToggle(props: ViewModeToggleProps) {
         title="Categories view"
       >
         <svg
-          class="w-4 h-4"
+          class="size-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

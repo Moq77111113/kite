@@ -8,7 +8,7 @@ export default function SearchBar(props: SearchBarProps) {
   return (
     <div class="relative">
       <svg
-        class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"
+        class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

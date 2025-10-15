@@ -3,6 +3,5 @@ export * from "./MoonIcon";
 export * from "./SunIcon";
 export * from "./MenuIcon";
 export * from "./GithubIcon";
-export * from "./AlertCircleIcon";
 export * from "./SearchIcon";
 export * from "./FireIcon";

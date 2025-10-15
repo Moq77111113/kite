@@ -1,30 +1,13 @@
-import { Link } from '@tanstack/solid-router'
-import type { TemplateSummary } from '@/types/template'
+import { getTagColor } from "@/lib/utils";
+import type { TemplateSummary } from "@/types/template";
+import { Link } from "@tanstack/solid-router";
 
 interface TemplateCardProps {
-  template: TemplateSummary
+  template: TemplateSummary;
 }
 
 export default function TemplateCard(props: TemplateCardProps) {
-  const primaryTag = () => props.template.tags[0] || 'general'
-
-  // Generate a color based on the tag
-  const tagColor = () => {
-    const colors = [
-      'from-blue-500 to-blue-600',
-      'from-purple-500 to-purple-600',
-      'from-pink-500 to-pink-600',
-      'from-red-500 to-red-600',
-      'from-orange-500 to-orange-600',
-      'from-yellow-500 to-yellow-600',
-      'from-green-500 to-green-600',
-      'from-teal-500 to-teal-600',
-      'from-cyan-500 to-cyan-600',
-      'from-indigo-500 to-indigo-600',
-    ]
-    const index = primaryTag().split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-    return colors[index % colors.length]
-  }
+  const primaryTag = () => props.template.tags[0] || "general";
 
   return (
     <Link
@@ -36,7 +19,11 @@ export default function TemplateCard(props: TemplateCardProps) {
         <span class="px-2.5 py-1 text-xs rounded-md bg-muted/50 text-muted-foreground capitalize font-medium">
           {primaryTag()}
         </span>
-        <div class={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tagColor()} flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform`}>
+        <div
+          class={`size-14 rounded-2xl bg-gradient-to-br ${getTagColor(
+            primaryTag()
+          )} flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform`}
+        >
           <span class="text-2xl font-bold">
             {props.template.name.charAt(0).toUpperCase()}
           </span>
@@ -57,5 +44,5 @@ export default function TemplateCard(props: TemplateCardProps) {
         <span>by {props.template.author}</span>
       </div>
     </Link>
-  )
+  );
 }

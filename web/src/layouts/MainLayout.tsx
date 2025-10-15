@@ -1,15 +1,40 @@
 import { Outlet, getRouteApi } from "@tanstack/solid-router";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal, onCleanup } from "solid-js";
 import Sidebar from "@/components/layout/Sidebar";
+import QuickSearch from "@/components/ui/QuickSearch";
+import Header from "@/components/layout/Header";
+import FireOverlay from "@/components/effects/FireOverlay";
+import { fireStore } from "@/stores/fireStore";
 
 const rootRoute = getRouteApi("__root__");
 
 export default function MainLayout() {
   const data = rootRoute.useLoaderData();
   const [sidebarOpen, setSidebarOpen] = createSignal(false);
+  const [searchOpen, setSearchOpen] = createSignal(false);
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      e.preventDefault();
+      setSearchOpen(true);
+    }
+  };
+
+  createEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    onCleanup(() => document.removeEventListener("keydown", handleKeyDown));
+  });
 
   return (
     <div class="flex min-h-svh bg-background">
+      <FireOverlay isActive={fireStore.isOnFire} />
+
+      <QuickSearch
+        templates={data().templates}
+        isOpen={searchOpen()}
+        onClose={() => setSearchOpen(false)}
+      />
+
       <Sidebar
         templates={data()}
         isOpen={sidebarOpen()}
@@ -17,30 +42,10 @@ export default function MainLayout() {
       />
 
       <div class="flex-1 lg:ml-64">
-        <header class="sticky top-0 z-30 flex h-16 items-center border-b border-border bg-background px-4 lg:hidden">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            class="p-2 hover:bg-accent rounded-md"
-            aria-label="Open menu"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
-          <span class="ml-4 text-lg font-bold">Kite</span>
-        </header>
+        <Header
+          onMenuClick={() => setSidebarOpen(true)}
+          onSearchClick={() => setSearchOpen(true)}
+        />
 
         <main>
           <Outlet />
