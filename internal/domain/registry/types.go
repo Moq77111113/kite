@@ -9,18 +9,19 @@ type TemplateListResponse struct {
 
 // TemplateSummary represents a template in the list view
 type TemplateSummary struct {
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Version     string   `json:"version"`
-	
-	Tags        []string `json:"tags"`
-	Author      string   `json:"author"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Version     string `json:"version"`
+
+	Tags   []string `json:"tags"`
+	Author string   `json:"author"`
 }
 
 // TemplateDetailResponse is the response from GET /templates/{name}
 type TemplateDetailResponse struct {
 	Name        string         `json:"name"`
 	Version     string         `json:"version"`
+	Author      string         `json:"author"`
 	Description string         `json:"description"`
 	Files       []TemplateFile `json:"files"`
 	Variables   []Variable     `json:"variables"`

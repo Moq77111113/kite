@@ -106,6 +106,7 @@ func (c *GitClient) GetTemplate(name string) (*registry.TemplateDetailResponse, 
 
 	return &registry.TemplateDetailResponse{
 		Name:        metadata.Name,
+		Author:      metadata.Author,
 		Version:     metadata.Version,
 		Description: metadata.Description,
 		Files:       files,
