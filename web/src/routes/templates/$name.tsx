@@ -4,6 +4,7 @@ import { CodeBlock } from "@/components/ui/CodeBlock";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { createFileRoute } from "@tanstack/solid-router";
 import { For, Show, createMemo } from "solid-js";
+import { marked } from "marked";
 
 export const Route = createFileRoute("/templates/$name")({
   loader: ({ params }) => fetchTemplate(params.name),
@@ -20,6 +21,11 @@ function TemplateDetail() {
     }
     secs.push({ id: "files", label: "Files" });
     return secs;
+  });
+
+  const renderedReadme = createMemo(() => {
+    if (!template().readme) return "";
+    return marked.parse(template().readme, { async: false });
   });
 
   return (
@@ -67,9 +73,7 @@ function TemplateDetail() {
           <section id="readme" class="mb-10">
             <h2 class="text-2xl font-bold text-foreground mb-5">README</h2>
             <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
-              <pre class="text-sm text-card-foreground whitespace-pre-wrap leading-relaxed">
-                {template().readme}
-              </pre>
+              <div class="prose prose-slate dark:prose-invert max-w-none" innerHTML={renderedReadme()} />
             </div>
           </section>
         </Show>

@@ -6,8 +6,11 @@ export default function ThemeToggle() {
 
   onMount(() => {
     const stored = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initialTheme = (stored as "light" | "dark") || (prefersDark ? "dark" : "light");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    const initialTheme =
+      (stored as "light" | "dark") || (prefersDark ? "dark" : "light");
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
   });
@@ -25,7 +28,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      class="p-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-colors"
+      class="p-2 cursor-pointer rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-colors"
       aria-label="Toggle theme"
     >
       {theme() === "light" ? <MoonIcon /> : <SunIcon />}
