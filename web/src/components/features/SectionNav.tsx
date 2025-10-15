@@ -1,4 +1,4 @@
-import { createSignal, onMount, onCleanup, For } from "solid-js";
+import { createSignal, For, onCleanup, onMount } from "solid-js";
 
 interface Section {
   id: string;
@@ -57,7 +57,7 @@ export function SectionNav(props: SectionNavProps) {
               <li class="relative">
                 <button
                   onClick={() => scrollToSection(section.id)}
-                  class={`block pl-3 text-sm transition-colors text-left w-full ${
+                  class={`cursor-pointer block pl-3 text-sm transition-colors text-left w-full ${
                     activeSection() === section.id
                       ? "text-foreground font-medium"
                       : "text-muted-foreground hover:text-foreground"

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/solid-router";
 import { For, Show } from "solid-js";
-import type { TemplateSummary } from "../types/template";
+import type { TemplateSummary } from "@/types/template";
 
 interface TemplateListProps {
   templates: TemplateSummary[];

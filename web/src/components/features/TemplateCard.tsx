@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/solid-router'
-import type { TemplateSummary } from '../types/template'
+import type { TemplateSummary } from '@/types/template'
 
 interface TemplateCardProps {
   template: TemplateSummary

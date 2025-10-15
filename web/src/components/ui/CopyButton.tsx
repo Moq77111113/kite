@@ -23,7 +23,7 @@ export function CopyButton(props: CopyButtonProps) {
   return (
     <button
       onClick={handleCopy}
-      class={`p-2 rounded-md border border-border bg-secondary hover:bg-accent transition-colors ${
+      class={`p-2 cursor-pointer rounded-md border border-border bg-secondary hover:bg-accent transition-colors ${
         props.class || ""
       }`}
       title="Copy to clipboard"
