@@ -29,6 +29,7 @@ func (s *Server) setupRoutes() {
 	s.router = mux.NewRouter()
 
 	api := s.router.PathPrefix("/api").Subrouter()
+	api.HandleFunc("/health", s.healthCheck).Methods("GET")
 	api.HandleFunc("/templates", s.listTemplates).Methods("GET")
 	api.HandleFunc("/templates/{name}", s.getTemplate).Methods("GET")
 
