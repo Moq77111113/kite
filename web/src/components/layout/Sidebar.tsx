@@ -1,10 +1,13 @@
-import { Link } from "@tanstack/solid-router";
-import { Show, createMemo, createSignal } from "solid-js";
-import type { TemplatesResponse } from "@/types/template";
 import CategoryList from "@/components/features/CategoryList";
-import SearchBar from "@/components/ui/SearchBar";
 import TemplateList from "@/components/features/TemplateList";
 import ViewModeToggle from "@/components/features/ViewModeToggle";
+import { FireIcon } from "@/components/ui/icons";
+import SearchBar from "@/components/ui/SearchBar";
+import { SITE_CONFIG } from "@/lib/site";
+import { fireStore } from "@/stores/fireStore";
+import type { TemplatesResponse } from "@/types/template";
+import { Link } from "@tanstack/solid-router";
+import { Show, createMemo, createSignal } from "solid-js";
 
 interface SidebarProps {
   templates: TemplatesResponse;
@@ -92,6 +95,22 @@ export default function Sidebar(props: SidebarProps) {
               <CategoryList categories={categorizedTemplates()} />
             </Show>
           </nav>
+
+          <footer class="border-t border-sidebar-border px-4 py-3">
+            <a
+              href={SITE_CONFIG.github.issues}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-2.5 text-xs text-sidebar-foreground/70 hover:text-orange-500 transition-colors group"
+              onMouseEnter={() => fireStore.boom()}
+              onMouseLeave={() => fireStore.calm()}
+            >
+              <FireIcon class="flex-shrink-0 group-hover:animate-pulse" />
+              <span class="leading-tight">
+                Report issue (it's broken anyway)
+              </span>
+            </a>
+          </footer>
         </div>
       </aside>
     </>
