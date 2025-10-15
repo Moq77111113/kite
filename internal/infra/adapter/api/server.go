@@ -37,10 +37,26 @@ func (s *Server) setupRoutes() {
 		panic("failed to load embedded web UI: " + err.Error())
 	}
 
-	s.router.PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fileServer := http.FileServer(http.FS(staticFS))
+	s.router.PathPrefix("/").Handler(spaHandler(staticFS))
+}
+
+// spaHandler serves the SPA and falls back to index.html for unknown routes
+func spaHandler(staticFS fs.FS) http.Handler {
+	fileServer := http.FileServer(http.FS(staticFS))
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+
+		f, err := staticFS.Open(path[1:])
+		if err == nil {
+			f.Close()
+			fileServer.ServeHTTP(w, r)
+			return
+		}
+
+		r.URL.Path = "/"
 		fileServer.ServeHTTP(w, r)
-	}))
+	})
 }
 
 func (s *Server) Start(port string) error {

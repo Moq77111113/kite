@@ -1,11 +1,17 @@
-.PHONY: build install test clean run dev kite
+.PHONY: build install test clean run dev kite build-web
 
 # Binary name
 BINARY_NAME=kite
 INSTALL_PATH=/usr/local/bin
+WEB_DIR=web
+
+# Build the web UI
+build-web:
+	@echo "Building web UI..."
+	@cd $(WEB_DIR) && pnpm install && pnpm build
 
 # Build the project
-build:
+build: build-web
 	@echo "Building $(BINARY_NAME)..."
 	@go build -o $(BINARY_NAME) ./cmd/kite.go
 
@@ -17,7 +23,7 @@ install: build
 
 
 # Development target to run the application with arguments
-kite:
+kite: build-web
 	@go run ./cmd/kite.go $(filter-out $@,$(MAKECMDGOALS))
 
 # Catch-all target to prevent make from complaining about unknown targets
@@ -33,6 +39,7 @@ test:
 clean:
 	@echo "Cleaning up..."
 	@rm -f $(BINARY_NAME)
+	@rm -rf $(WEB_DIR)/dist
 	@go clean
 
 # Run the application
