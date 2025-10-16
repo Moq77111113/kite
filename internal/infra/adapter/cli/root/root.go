@@ -8,6 +8,7 @@ import (
 	"github.com/moq77111113/kite/internal/infra/adapter/cli/remove"
 	"github.com/moq77111113/kite/internal/infra/adapter/cli/serve"
 	"github.com/moq77111113/kite/internal/infra/adapter/cli/update"
+	"github.com/moq77111113/kite/internal/infra/adapter/cli/version"
 	"github.com/spf13/cobra"
 )
 
@@ -28,6 +29,7 @@ Pull templates from a registry.`,
 	cmd.AddCommand(update.NewUpdateCmd())
 	cmd.AddCommand(diff.NewDiffCmd())
 	cmd.AddCommand(serve.NewServeCmd())
+	cmd.AddCommand(version.NewVersionCmd())
 
 	return cmd
 }

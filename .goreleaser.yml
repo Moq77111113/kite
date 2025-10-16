@@ -1,0 +1,92 @@
+version: 2
+
+project_name: kite
+
+before:
+  hooks:
+    # Ensure the web UI is built before building binaries
+    # This should already be done by the release workflow, but we verify here
+    - sh -c "test -d web/dist || (echo 'Error: web/dist not found. Run pnpm build in web/ first.' && exit 1)"
+
+builds:
+  - id: kite
+    main: ./cmd/kite.go
+    binary: kite
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    goarm:
+      - "7"
+    ldflags:
+      - -s -w
+      - -X github.com/moq77111113/kite/internal/version.Version={{.Version}}
+      - -X github.com/moq77111113/kite/internal/version.Commit={{.Commit}}
+      - -X github.com/moq77111113/kite/internal/version.Date={{.Date}}
+
+archives:
+  - id: kite-archive
+    format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- if eq .Os "darwin" }}macOS
+      {{- else }}{{ .Os }}{{ end }}_
+      {{- .Arch }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    files:
+      - README.md
+      - LICENSE
+      - docs/**/*
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^style:"
+      - "typo"
+  groups:
+    - title: Features
+      regexp: "^feat:"
+      order: 0
+    - title: Bug Fixes
+      regexp: "^fix:"
+      order: 1
+    - title: Others
+      order: 999
+
+release:
+  github:
+    owner: Moq77111113
+    name: kite
+  draft: false
+  prerelease: auto
+  name_template: "v{{.Version}}"
+  header: |
+    ## Kite {{.Version}}
+
+    Get, Share, Brake (yes, really) flat files for your needs.
+
+    ### Installation
+
+    **macOS/Linux:**
+    ```bash
+    curl -sfL https://raw.githubusercontent.com/Moq77111113/kite/main/install.sh | sh
+    ```
+
+    **Or download the binary for your platform below.**

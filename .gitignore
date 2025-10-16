@@ -32,3 +32,10 @@ kite
 bin/
 demo/
 tmp/
+
+# Web build output
+web/dist/
+web/node_modules/
+
+# GoReleaser output
+dist/

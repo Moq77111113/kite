@@ -72,7 +72,7 @@ GitHub Actions, GitLab CI, any runner: your infrastructure is cloned, editable, 
 **Install:**
 
 ```bash
-curl -ssL https://raw.githubusercontent.com/moq77111113/kite/main/install.sh | bash
+curl -sfL https://raw.githubusercontent.com/Moq77111113/kite/main/install.sh | sh
 # One day we'll have a website.
 ```
 
