@@ -23,7 +23,7 @@ install: build
 
 
 # Development target to run the application with arguments
-kite: build-web
+kite: 
 	@go run ./cmd/kite.go $(filter-out $@,$(MAKECMDGOALS))
 
 # Catch-all target to prevent make from complaining about unknown targets

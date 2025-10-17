@@ -9,43 +9,51 @@ import (
 	"github.com/moq77111113/kite/internal/infra/persistence/config"
 )
 
-// Manager handles template operations
-type Manager struct {
+// Repository handles template operations
+type Repository struct {
 	config    *config.Config
 	client    registry.Client
 	installer Installer
 }
 
-func NewManager(cfg *config.Config, client registry.Client) *Manager {
-	return &Manager{
+func NewRepository(cfg *config.Config, client registry.Client) *Repository {
+	return &Repository{
 		config:    cfg,
 		client:    client,
 		installer: NewInstaller(),
 	}
 }
 
-// Add downloads and installs a template
-func (m *Manager) Add(name string) error {
-	// Check if already installed
-	if _, exists := m.config.GetTemplate(name); exists {
-		return fmt.Errorf("template %s is already installed", name)
+// CheckConflict checks if a template directory already exists
+func (r *Repository) CheckConflict(destPath string) (bool, error) {
+	_, err := os.Stat(destPath)
+	if err == nil {
+		return true, nil
 	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
 
-	// Fetch from registry
-	template, err := m.client.GetTemplate(name)
+// Add downloads and installs a template
+func (r *Repository) Add(name, customPath string) error {
+	template, err := r.client.GetTemplate(name)
 	if err != nil {
 		return fmt.Errorf("failed to fetch template: %w", err)
 	}
 
-	// Install
-	destPath := filepath.Join(m.config.Path, name)
-	if err := m.installer.Install(template, destPath); err != nil {
+	destPath := filepath.Join(r.config.Path, name)
+	if customPath != "" {
+		destPath = customPath
+	}
+
+	if err := r.installer.Install(template, destPath); err != nil {
 		return fmt.Errorf("failed to install template: %w", err)
 	}
 
-	// Update config
-	m.config.AddTemplate(name, template.Version)
-	if err := config.Save(m.config, ""); err != nil {
+	r.config.AddTemplate(name, template.Version)
+	if err := config.Save(r.config, ""); err != nil {
 		return fmt.Errorf("failed to save config: %w", err)
 	}
 
@@ -53,21 +61,18 @@ func (m *Manager) Add(name string) error {
 }
 
 // Remove uninstalls a template
-func (m *Manager) Remove(name string) error {
-	// Check if installed
-	if _, exists := m.config.GetTemplate(name); !exists {
+func (r *Repository) Remove(name string) error {
+	if _, exists := r.config.GetTemplate(name); !exists {
 		return fmt.Errorf("template %s is not installed", name)
 	}
 
-	// Remove directory
-	destPath := filepath.Join(m.config.Path, name)
+	destPath := filepath.Join(r.config.Path, name)
 	if err := os.RemoveAll(destPath); err != nil {
 		return fmt.Errorf("failed to remove directory: %w", err)
 	}
 
-	// Update config
-	m.config.RemoveTemplate(name)
-	if err := config.Save(m.config, ""); err != nil {
+	r.config.RemoveTemplate(name)
+	if err := config.Save(r.config, ""); err != nil {
 		return fmt.Errorf("failed to save config: %w", err)
 	}
 
@@ -75,15 +80,13 @@ func (m *Manager) Remove(name string) error {
 }
 
 // CheckUpdate checks if an update is available for a template
-func (m *Manager) CheckUpdate(name string) (*UpdateInfo, error) {
-	// Get installed version
-	installed, exists := m.config.GetTemplate(name)
+func (r *Repository) CheckUpdate(name string) (*UpdateInfo, error) {
+	installed, exists := r.config.GetTemplate(name)
 	if !exists {
 		return nil, fmt.Errorf("template %s is not installed", name)
 	}
 
-	// Fetch latest from registry
-	latest, err := m.client.GetTemplate(name)
+	latest, err := r.client.GetTemplate(name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch template: %w", err)
 	}

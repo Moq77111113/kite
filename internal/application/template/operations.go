@@ -2,6 +2,7 @@ package template
 
 import (
 	"fmt"
+	"path/filepath"
 	"time"
 
 	"github.com/moq77111113/kite/internal/application/registry"
@@ -12,36 +13,47 @@ import (
 
 // Service handles template operations orchestration
 type Service struct {
-	config  *config.Config
-	client  reg.Client
-	manager *template.Manager
+	config     *config.Config
+	client     reg.Client
+	repository *template.Repository
 }
 
 // NewService creates a new template service
 func NewService(cfg *config.Config) *Service {
 	client := registry.NewClient(cfg.Registry)
-	manager := template.NewManager(cfg, client)
+	repository := template.NewRepository(cfg, client)
 
 	return &Service{
-		config:  cfg,
-		client:  client,
-		manager: manager,
+		config:     cfg,
+		client:     client,
+		repository: repository,
 	}
 }
 
 // Add adds a template to the project
-func (s *Service) Add(name string) error {
-	return s.manager.Add(name)
+func (s *Service) Add(name, customPath string) error {
+	return s.repository.Add(name, customPath)
+}
+
+// CheckConflict checks if a template directory already exists
+func (s *Service) CheckConflict(name string) (bool, error) {
+	destPath := filepath.Join(s.config.Path, name)
+	return s.repository.CheckConflict(destPath)
+}
+
+// GetDefaultPath returns the default installation path for a template
+func (s *Service) GetDefaultPath(name string) string {
+	return filepath.Join(s.config.Path, name)
 }
 
 // Remove removes a template from the project
 func (s *Service) Remove(name string) error {
-	return s.manager.Remove(name)
+	return s.repository.Remove(name)
 }
 
 // CheckUpdate checks if an update is available for a template
 func (s *Service) CheckUpdate(name string) (*template.UpdateInfo, error) {
-	return s.manager.CheckUpdate(name)
+	return s.repository.CheckUpdate(name)
 }
 
 // GetInstalled gets an installed template's info
