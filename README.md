@@ -3,11 +3,14 @@
 **Fork your infrastructure. Don't worship it.**
 
 
-> [!WARNING] Still an MVP. Because the best tools start as scripts that worked once.
+> [!WARNING]
+> Still an MVP. Because the best tools start as scripts that worked once.
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Go Version](https://img.shields.io/badge/go-1.24-00ADD8.svg)](https://go.dev/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/Moq77111113/kite)](go.mod)
+[![Release](https://img.shields.io/github/v/release/Moq77111113/kite)](https://github.com/Moq77111113/kite/releases)
+[![Stars](https://img.shields.io/github/stars/Moq77111113/kite?style=social)](https://github.com/Moq77111113/kite/stargazers)
 
 
 **Try it now:**
