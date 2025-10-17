@@ -8,19 +8,18 @@ import (
 	"github.com/moq77111113/kite/internal/domain/registry"
 )
 
-// GitClient implements registry.Client using a Git repository
 type GitClient struct {
-	repoURL   string
-	cachePath string
-	git       Client // Local git wrapper client
+	repoURL      string
+	cachePath    string
+	git          Client
+	syncCallback SyncCallback
 }
 
-// NewGitClient creates a new Git-based registry client
-func NewGitClient(repoURL string, gitClient Client) (registry.Client, error) {
+// NewGitClient creates a new Git-based registry client with optional sync callback
+func NewGitClient(repoURL string, gitClient Client, syncCallback SyncCallback) (registry.Client, error) {
 	var cachePath string
 	var isLocalRepo bool
 
-	// Check if repoURL is already a local Git repository
 	if isLocalPath(repoURL) && gitClient.IsCloned(repoURL) {
 		cachePath = repoURL
 		isLocalRepo = true
@@ -30,15 +29,21 @@ func NewGitClient(repoURL string, gitClient Client) (registry.Client, error) {
 	}
 
 	client := &GitClient{
-		repoURL:   repoURL,
-		cachePath: cachePath,
-		git:       gitClient,
+		repoURL:      repoURL,
+		cachePath:    cachePath,
+		git:          gitClient,
+		syncCallback: syncCallback,
 	}
 
-	// Clone or pull repository (skip if local)
-	if !isLocalRepo {
-		if err := client.ensureRepository(); err != nil {
+	if !isLocalRepo && !gitClient.IsCloned(cachePath) {
+		if syncCallback != nil {
+			syncCallback(msgCloningRegistry)
+		}
+		if err := client.ensureRepositoryClone(); err != nil {
 			return nil, fmt.Errorf("failed to initialize git registry: %w", err)
+		}
+		if syncCallback != nil {
+			syncCallback(msgRegistryCloned)
 		}
 	}
 
@@ -66,7 +71,7 @@ func (c *GitClient) ListTemplates() ([]registry.TemplateSummary, error) {
 		templatePath := filepath.Join(c.cachePath, entry.Name())
 		metadata, err := c.readKiteYAML(templatePath)
 		if err != nil {
-			continue // Skip directories without valid kite.yaml
+			continue
 		}
 
 		templates = append(templates, registry.TemplateSummary{
@@ -84,8 +89,15 @@ func (c *GitClient) ListTemplates() ([]registry.TemplateSummary, error) {
 // GetTemplate returns a specific template by name
 func (c *GitClient) GetTemplate(name string) (*registry.TemplateDetailResponse, error) {
 	templatePath := filepath.Join(c.cachePath, name)
+
 	if _, err := os.Stat(templatePath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("template %s not found", name)
+		if err := c.syncIfNeeded(templatePath); err != nil {
+			return nil, fmt.Errorf("template %s not found and sync failed: %w", name, err)
+		}
+
+		if _, err := os.Stat(templatePath); os.IsNotExist(err) {
+			return nil, fmt.Errorf("template %s not found even after sync", name)
+		}
 	}
 
 	metadata, err := c.readKiteYAML(templatePath)
@@ -113,17 +125,4 @@ func (c *GitClient) GetTemplate(name string) (*registry.TemplateDetailResponse, 
 		Variables:   metadata.Variables,
 		Readme:      readme,
 	}, nil
-}
-
-// ensureRepository clones or updates the Git repository
-func (c *GitClient) ensureRepository() error {
-	if c.git.IsCloned(c.cachePath) {
-		return c.git.Pull(c.cachePath)
-	}
-
-	if err := os.MkdirAll(filepath.Dir(c.cachePath), 0755); err != nil {
-		return fmt.Errorf("failed to create cache directory: %w", err)
-	}
-
-	return c.git.Clone(c.repoURL, c.cachePath)
 }

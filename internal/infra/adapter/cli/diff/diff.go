@@ -30,15 +30,13 @@ func runDiff(cmd *cobra.Command, args []string) error {
 
 	name := args[0]
 
-	svc := template.NewService(cfg)
+	svc := template.NewService(cfg, nil)
 
-	// Check if installed
 	installed, err := svc.GetInstalled(name)
 	if err != nil {
 		return err
 	}
 
-	// Fetch from registry
 	detail, err := svc.GetDetails(name)
 	if err != nil {
 		return fmt.Errorf("failed to fetch template from registry: %w", err)

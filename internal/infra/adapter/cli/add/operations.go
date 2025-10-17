@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/moq77111113/kite/internal/application/template"
+	"github.com/moq77111113/kite/internal/domain/registry"
 	"github.com/moq77111113/kite/pkg/console"
 )
 
@@ -35,16 +36,20 @@ func addTemplate(svc *template.Service, name string) error {
 		}
 	}
 
-	var installErr error
-	err = console.Spinner(fmt.Sprintf("Fetching %s", console.Cyan(name)), func() error {
-		installErr = svc.Add(name, customPath)
-		return installErr
+	var tmpl *registry.TemplateDetailResponse
+	err = console.Spinner(fmt.Sprintf("Fetching %s from registry", console.Cyan(name)), func() error {
+		var fetchErr error
+		tmpl, fetchErr = svc.FetchTemplate(name)
+		return fetchErr
 	})
+	if err != nil {
+		return err
+	}
 
-	if err != nil || installErr != nil {
-		if installErr != nil {
-			return installErr
-		}
+	err = console.Spinner(fmt.Sprintf("Installing %s", console.Cyan(name)), func() error {
+		return svc.InstallTemplate(name, customPath, tmpl)
+	})
+	if err != nil {
 		return err
 	}
 

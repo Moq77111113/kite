@@ -23,7 +23,7 @@ func NewServeCmd() *cobra.Command {
 				return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 			}
 
-			svc := template.NewService(cfg)
+			svc := template.NewService(cfg, nil)
 			srv := api.New(svc)
 
 			console.EmptyLine()

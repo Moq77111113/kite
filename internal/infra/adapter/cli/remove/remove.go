@@ -24,7 +24,7 @@ func runRemove(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
 
-	svc := template.NewService(cfg)
+	svc := template.NewService(cfg, nil)
 
 	name := args[0]
 	if err := svc.Remove(name); err != nil {

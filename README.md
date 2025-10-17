@@ -2,12 +2,15 @@
 
 **Fork your infrastructure. Don't worship it.**
 
+
 > [!WARNING] Still an MVP. Because the best tools start as scripts that worked once.
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.24-00ADD8.svg)](https://go.dev/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
+
+**Try it now:**
 ```bash
 curl -sfL https://raw.githubusercontent.com/Moq77111113/kite/main/install.sh | sh && kite init
 ```
@@ -16,11 +19,11 @@ curl -sfL https://raw.githubusercontent.com/Moq77111113/kite/main/install.sh | s
 
 ## What is this?
 
-> A small act of rebellion disguised as a CLI.
+> Kite is not a package manager. It's a code forking tool.
 
 A CLI tool for copying infrastructure code without the guilt trip.
 
-Docker setups. CI configs. Terraform modules. The stuff that lives in your team's repos but nobody can find because it's Slack message 47 on June 12th.
+Docker setups, app configs. Terraform modules. The stuff that lives in your team's repos but nobody can find because it's Slack message 47 on June 12th.
 
 **You don't install templates. You copy them. Then you break them. Like adults.**
 
@@ -67,7 +70,7 @@ No daemons. No agents. No "syncing with the mothership."
 ## What you get
 
 ```bash
-kite add docker-postgres redis-cache
+kite add steves-stuff redis-cache
 ```
 
 **Result:**
@@ -75,7 +78,7 @@ kite add docker-postgres redis-cache
 ```
 ├─ redis-cache/
 │  └─ docker-compose.yml
-└─ steves-script-for-magically-fixing-stuff/
+└─ steves-stuff/
    └─ fix-everything.sh
 ```
 
@@ -88,7 +91,7 @@ Real files. Not symlinks. Not "immutable dependencies." Not "please don't touch 
 - Sure, you could use a package manager.
 - You could even `git sparse-checkout` that one folder you actually need.
 - You could add a submodule too — if you enjoy existential pain.
-- And yes, you could even build a registry on top of shadcn’s system if you really hated yourself.
+- And yes, you could even build your own shadcn registry.
 
 And it's ok!
 
@@ -97,6 +100,12 @@ But sometimes you just want to grab `cleanRestart.sh`, or `steves-business.py` �
 That’s what Kite is for.
 No build step. No dependency graph. No ceremony.
 Just a bunch of scripts that actually do things.
+
+```
+npm install  →  Black box, breaks on update, vendor lock-in
+kite add     →  Fork the code, modify it, you're in control
+```
+
 
 ## The Rules
 
@@ -126,13 +135,15 @@ kite init --registry git@github.com:your-team/templates.git
 kite serve --port 8080
 
 # Or skip the browsing
-kite list    # see available templates
+kite list   
+
+# Copy what you need
 kite add docker-postgres github-ci-deploy
 ```
 
 ## What it does
 
-✅ Browse templates in a web UI (because command lines are for cowards)
+✅ Browse templates in a wholesome UI (because command lines are for cowards)  
 ✅ Copy them as real files you can actually edit  
 ✅ Git-based registries (your repo = your source of truth)  
 ✅ Self-hosted (no SaaS, no tracking, no "phone home")  
@@ -145,7 +156,7 @@ kite add docker-postgres github-ci-deploy
 ❌ Trying to abstract away complexity you need to understand  
 ❌ Here to hold your hand while you cargo-cult best practices
 
-It’s cp -r with opinions and a search bar.
+It’s `cp -r` with opinions and a search bar.
 Everything else is coping.
 
 ## Creating a registry
@@ -174,7 +185,7 @@ description: PostgreSQL with Docker Compose
 tags: [docker, database]
 ```
 
-Push to Git. Kite at it. Ship.
+Push to Git. Point Kite at it. Ship.
 
 ### What people are saying
 
@@ -221,6 +232,8 @@ MIT. Copy it. Fork it. Sell it to Oracle. Whatever.
 
 **It's what happens when you stop pretending you don't copy code.**
 
-If you've ever searched Slack for 30mn "that one docker-compose file Sarah wrote," this tool is for you.
+If you've ever searched Slack for 30 minutes looking for "that one docker-compose file Sarah wrote," this tool is for you.
 
-"Install Kite. Copy your first template in 60 seconds."
+```bash
+curl -sfL https://raw.githubusercontent.com/Moq77111113/kite/main/install.sh | sh && kite init
+```

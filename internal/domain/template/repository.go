@@ -60,6 +60,34 @@ func (r *Repository) Add(name, customPath string) error {
 	return nil
 }
 
+// FetchTemplate downloads a template from the registry
+func (r *Repository) FetchTemplate(name string) (*registry.TemplateDetailResponse, error) {
+	template, err := r.client.GetTemplate(name)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch template: %w", err)
+	}
+	return template, nil
+}
+
+// InstallTemplate installs a template to disk and updates config
+func (r *Repository) InstallTemplate(name, customPath string, template *registry.TemplateDetailResponse) error {
+	destPath := filepath.Join(r.config.Path, name)
+	if customPath != "" {
+		destPath = customPath
+	}
+
+	if err := r.installer.Install(template, destPath); err != nil {
+		return fmt.Errorf("failed to install template: %w", err)
+	}
+
+	r.config.AddTemplate(name, template.Version)
+	if err := config.Save(r.config, ""); err != nil {
+		return fmt.Errorf("failed to save config: %w", err)
+	}
+
+	return nil
+}
+
 // Remove uninstalls a template
 func (r *Repository) Remove(name string) error {
 	if _, exists := r.config.GetTemplate(name); !exists {

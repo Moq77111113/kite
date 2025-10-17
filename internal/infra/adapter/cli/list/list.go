@@ -26,7 +26,7 @@ func runList(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	svc := template.NewService(cfg)
+	svc := template.NewService(cfg, nil)
 	templates, err := svc.ListAvailable()
 	if err != nil {
 		return fmt.Errorf("failed to fetch templates: %w", err)

@@ -31,7 +31,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	svc := template.NewService(cfg)
+	svc := template.NewService(cfg, nil)
 	updates, err := checkForUpdates(cfg, svc)
 	if err != nil {
 		return err

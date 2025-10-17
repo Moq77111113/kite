@@ -9,18 +9,18 @@ import (
 	reg "github.com/moq77111113/kite/internal/domain/registry"
 	"github.com/moq77111113/kite/internal/domain/template"
 	"github.com/moq77111113/kite/internal/infra/persistence/config"
+	"github.com/moq77111113/kite/internal/infra/registry/git"
 )
 
-// Service handles template operations orchestration
 type Service struct {
 	config     *config.Config
 	client     reg.Client
 	repository *template.Repository
 }
 
-// NewService creates a new template service
-func NewService(cfg *config.Config) *Service {
-	client := registry.NewClient(cfg.Registry)
+// NewService creates a new template service with optional sync callback
+func NewService(cfg *config.Config, syncCallback git.SyncCallback) *Service {
+	client := registry.NewClient(cfg.Registry, syncCallback)
 	repository := template.NewRepository(cfg, client)
 
 	return &Service{
@@ -30,33 +30,35 @@ func NewService(cfg *config.Config) *Service {
 	}
 }
 
-// Add adds a template to the project
 func (s *Service) Add(name, customPath string) error {
 	return s.repository.Add(name, customPath)
 }
 
-// CheckConflict checks if a template directory already exists
+func (s *Service) FetchTemplate(name string) (*reg.TemplateDetailResponse, error) {
+	return s.repository.FetchTemplate(name)
+}
+
+func (s *Service) InstallTemplate(name, customPath string, template *reg.TemplateDetailResponse) error {
+	return s.repository.InstallTemplate(name, customPath, template)
+}
+
 func (s *Service) CheckConflict(name string) (bool, error) {
 	destPath := filepath.Join(s.config.Path, name)
 	return s.repository.CheckConflict(destPath)
 }
 
-// GetDefaultPath returns the default installation path for a template
 func (s *Service) GetDefaultPath(name string) string {
 	return filepath.Join(s.config.Path, name)
 }
 
-// Remove removes a template from the project
 func (s *Service) Remove(name string) error {
 	return s.repository.Remove(name)
 }
 
-// CheckUpdate checks if an update is available for a template
 func (s *Service) CheckUpdate(name string) (*template.UpdateInfo, error) {
 	return s.repository.CheckUpdate(name)
 }
 
-// GetInstalled gets an installed template's info
 func (s *Service) GetInstalled(name string) (*reg.InstalledTemplate, error) {
 	tmpl, exists := s.config.GetTemplate(name)
 	if !exists {
@@ -69,7 +71,6 @@ func (s *Service) GetInstalled(name string) (*reg.InstalledTemplate, error) {
 	}, nil
 }
 
-// ListInstalled lists all installed templates
 func (s *Service) ListInstalled() []reg.InstalledTemplate {
 	var installed []reg.InstalledTemplate
 	for name, tmpl := range s.config.Templates {
@@ -82,22 +83,18 @@ func (s *Service) ListInstalled() []reg.InstalledTemplate {
 	return installed
 }
 
-// ListAvailable lists all templates from the registry
 func (s *Service) ListAvailable() ([]reg.TemplateSummary, error) {
 	return s.client.ListTemplates()
 }
 
-// GetDetails gets template details from registry
 func (s *Service) GetDetails(name string) (*reg.TemplateDetailResponse, error) {
 	return s.client.GetTemplate(name)
 }
 
-// Config returns the current config
 func (s *Service) Config() *config.Config {
 	return s.config
 }
 
-// convertTimestamp converts Unix timestamp to time.Time
 func convertTimestamp(ts int64) time.Time {
 	return time.Unix(ts, 0)
 }

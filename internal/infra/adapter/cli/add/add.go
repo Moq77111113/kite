@@ -24,7 +24,9 @@ func runAdd(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to load config: %w (run 'kite init' first)", err)
 	}
 
-	s := template.NewService(cfg)
+	s := template.NewService(cfg, func(message string) {
+		console.Info(message)
+	})
 
 	console.EmptyLine()
 	installed := 0

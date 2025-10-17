@@ -24,7 +24,7 @@ type Template struct {
 }
 
 const (
-	DefaultPath        = "./infrastructure"
+	DefaultPath        = "./"
 	ConfigFileName     = "kite.yaml"
 	GlobalConfigName   = "config.yaml"
 )
@@ -134,13 +134,11 @@ func Init(registry, path string, local bool, customPath string) (*Config, error)
 		return nil, err
 	}
 
-	// Determine config location
 	var configLocation string
 	if local {
-		// Force local config
+
 		configLocation = filepath.Join(".", ConfigFileName)
 	} else {
-		// Use normal priority: customPath > global
 		configLocation = customPath
 	}
 
