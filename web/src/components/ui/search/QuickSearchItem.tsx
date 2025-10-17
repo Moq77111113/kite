@@ -19,8 +19,8 @@ export default function QuickSearchItem(props: QuickSearchItemProps) {
       onClick={() => props.onSelect(props.template)}
     >
       <div
-        class="size-10 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform"
-        style={{ background: `var(--avatar-${avatarNum()})` }}
+        class="size-10 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform bg-[var(--avatar)]"
+        style={{ "--avatar": `var(--avatar-${avatarNum()})` }}
       >
         <span class="text-lg font-bold">
           {props.template.name.charAt(0).toUpperCase()}
