@@ -1,28 +1,25 @@
-import type { TemplateSummary } from "@/types/template";
-import { For, Show } from "solid-js";
-import QuickSearchEmptyState from "./QuickSearchEmptyState";
-import QuickSearchItem from "./QuickSearchItem";
+import type { KitSummary } from '@/types/kit';
+import { For, Show } from 'solid-js';
+import QuickSearchEmptyState from './QuickSearchEmptyState';
+import QuickSearchItem from './QuickSearchItem';
 
 interface QuickSearchResultsProps {
-  templates: TemplateSummary[];
+  kits: KitSummary[];
   selectedIndex: number;
-  onSelectTemplate: (template: TemplateSummary) => void;
+  onSelectKit: (kit: KitSummary) => void;
 }
 
 export default function QuickSearchResults(props: QuickSearchResultsProps) {
   return (
     <div class="max-h-[420px] overflow-y-auto">
-      <Show
-        when={props.templates.length > 0}
-        fallback={<QuickSearchEmptyState />}
-      >
+      <Show when={props.kits.length > 0} fallback={<QuickSearchEmptyState />}>
         <div class="p-2">
-          <For each={props.templates}>
-            {(template, index) => (
+          <For each={props.kits}>
+            {(kit, index) => (
               <QuickSearchItem
-                template={template}
+                kit={kit}
                 isSelected={index() === props.selectedIndex}
-                onSelect={props.onSelectTemplate}
+                onSelect={props.onSelectKit}
               />
             )}
           </For>

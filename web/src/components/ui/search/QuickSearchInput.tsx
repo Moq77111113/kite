@@ -26,7 +26,7 @@ export default function QuickSearchInput(props: QuickSearchInputProps) {
       <input
         ref={handleRef}
         type="text"
-        placeholder="Search templates..."
+        placeholder="Search kits..."
         value={props.query}
         onInput={(e) => props.onQueryChange(e.currentTarget.value)}
         class="flex-1 bg-transparent text-card-foreground placeholder:text-muted-foreground outline-none"

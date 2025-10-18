@@ -2,7 +2,6 @@
 
 **Fork your infrastructure. Don't worship it.**
 
-
 > [!WARNING]
 > Still an MVP. Because the best tools start as scripts that worked once.
 
@@ -12,8 +11,8 @@
 [![Release](https://img.shields.io/github/v/release/Moq77111113/kite)](https://github.com/Moq77111113/kite/releases)
 [![Stars](https://img.shields.io/github/stars/Moq77111113/kite?style=social)](https://github.com/Moq77111113/kite/stargazers)
 
-
 **Try it now:**
+
 ```bash
 curl -sfL https://raw.githubusercontent.com/Moq77111113/kite/main/install.sh | sh && kite init
 ```
@@ -57,7 +56,7 @@ But here's what actually happens: you copy Steve's folder, rename a few variable
 # initialize a new registry (or use an existing one)
 kite init
 
-# Browse templates in a wholesome web UI
+# Browse kits in a wholesome web UI
 kite serve
 
 # Or just grab what you need
@@ -109,7 +108,6 @@ npm install  →  Black box, breaks on update, vendor lock-in
 kite add     →  Fork the code, modify it, you're in control
 ```
 
-
 ## The Rules
 
 1. **No vendor lock-in** — Git repos, not proprietary registries
@@ -132,13 +130,13 @@ curl -sfL https://raw.githubusercontent.com/Moq77111113/kite/main/install.sh | s
 
 ```bash
 # Point to a registry (just a Git repo)
-kite init --registry git@github.com:your-team/templates.git
+kite init --registry git@github.com:your-team/kits.git
 
-# Browse templates in a UI
+# Browse kits in a UI
 kite serve --port 8080
 
 # Or skip the browsing
-kite list   
+kite list
 
 # Copy what you need
 kite add docker-postgres github-ci-deploy
@@ -146,7 +144,7 @@ kite add docker-postgres github-ci-deploy
 
 ## What it does
 
-✅ Browse templates in a wholesome UI (because command lines are for cowards)  
+✅ Browse kits in a wholesome UI (because command lines are for cowards)  
 ✅ Copy them as real files you can actually edit  
 ✅ Git-based registries (your repo = your source of truth)  
 ✅ Self-hosted (no SaaS, no tracking, no "phone home")  
@@ -167,7 +165,7 @@ Everything else is coping.
 It's just a Git repo with folders:
 
 ```
-my-templates/
+my-kits/
 ├── docker-postgres/
 │   ├── kite.yaml
 │   └── docker-compose.yml
@@ -179,7 +177,7 @@ my-templates/
     └── fix-everything.sh
 ```
 
-Each template has a `kite.yaml`:
+Each kit has a `kite.yaml`:
 
 ```yaml
 name: docker-postgres
@@ -203,8 +201,8 @@ Push to Git. Point Kite at it. Ship.
 
 ## Roadmap
 
-**V0** (now): CLI + web UI + Git registries  
-**V1**: Template variables, better search, CI integration  
+**V0** (now): CLI + web UI + Git registries
+**V1**: Template variables, better search, CI integration
 **V2**: Analytics, offline mode, maybe a t-shirt
 
 And more, if you ask nicely.

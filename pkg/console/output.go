@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var spinnerFrames = []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
+var portsnnerFrames = []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
 
 // Success prints a success message with checkmark
 func Success(msg string) {
@@ -43,7 +43,7 @@ func EmptyLine() {
 	fmt.Println()
 }
 
-// Spinner runs a function with a spinner animation
+// Spinner runs a function with a portsnner animation
 func Spinner(msg string, fn func() error) error {
 	done := make(chan bool)
 	errChan := make(chan error)
@@ -55,7 +55,7 @@ func Spinner(msg string, fn func() error) error {
 			case <-done:
 				return
 			default:
-				fmt.Printf("\r  %s %s...", Cyan(spinnerFrames[i%len(spinnerFrames)]), msg)
+				fmt.Printf("\r  %s %s...", Cyan(portsnnerFrames[i%len(portsnnerFrames)]), msg)
 				time.Sleep(80 * time.Millisecond)
 				i++
 			}

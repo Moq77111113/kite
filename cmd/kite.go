@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/moq77111113/kite/internal/infra/adapter/cli/root"
+	"github.com/moq77111113/kite/internal/infra/cli/root"
 )
 
 func main() {

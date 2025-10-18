@@ -1,29 +1,27 @@
-import { createFileRoute } from "@tanstack/solid-router";
-import { For, createMemo, createSignal } from "solid-js";
-import { fetchTemplates } from "@/api/templates";
-import SearchBar from "@/components/ui/SearchBar";
-import TemplateCard from "@/components/features/TemplateCard";
+import { fetchKits } from '@/api/kits';
+import KitCard from '@/components/features/KitCard';
+import SearchBar from '@/components/ui/SearchBar';
+import { createFileRoute } from '@tanstack/solid-router';
+import { For, createMemo, createSignal } from 'solid-js';
 
-export const Route = createFileRoute("/categories/$name")({
+export const Route = createFileRoute('/categories/$name')({
   component: CategoryView,
   loader: async ({ params }) => {
-    const templates = await fetchTemplates(params.name);
-    return templates.templates;
+    const kits = await fetchKits(params.name);
+    return kits.kits;
   },
 });
 
 function CategoryView() {
   const data = Route.useLoaderData();
   const params = Route.useParams();
-  const [searchQuery, setSearchQuery] = createSignal("");
+  const [searchQuery, setSearchQuery] = createSignal('');
 
-  const filteredTemplates = createMemo(() => {
+  const filteredKits = createMemo(() => {
     const query = searchQuery().toLowerCase();
     if (!query) return data();
 
-    return data().filter((template) =>
-      template.name.toLowerCase().includes(query)
-    );
+    return data().filter((kit) => kit.name.toLowerCase().includes(query));
   });
 
   return (
@@ -33,8 +31,8 @@ function CategoryView() {
           {params().name}
         </h1>
         <p class="text-base text-muted-foreground mb-6">
-          {filteredTemplates().length} template
-          {filteredTemplates().length !== 1 ? "s" : ""} in this category
+          {filteredKits().length} kit
+          {filteredKits().length !== 1 ? 's' : ''} in this category
         </p>
         <div class="max-w-md">
           <SearchBar
@@ -46,9 +44,7 @@ function CategoryView() {
       </header>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <For each={filteredTemplates()}>
-          {(template) => <TemplateCard template={template} />}
-        </For>
+        <For each={filteredKits()}>{(kit) => <KitCard kit={kit} />}</For>
       </div>
     </div>
   );
