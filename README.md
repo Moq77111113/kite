@@ -65,6 +65,8 @@ kite add docker-postgres redis-cache
 # Files appear. Edit them. They're yours now.
 ```
 
+> For those who need a little hand-holding despite the rules, here's an example registry: [https://github.com/Moq77111113/kite-registry](https://github.com/Moq77111113/kite-registry).
+
 **That's it. That's the whole tool.**
 
 No daemons. No agents. No "syncing with the mothership."
