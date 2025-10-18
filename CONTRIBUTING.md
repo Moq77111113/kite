@@ -65,29 +65,54 @@ The dev server will proxy API requests to the Go server.
 
 ## Making Changes
 
-### Code Structure
+### Architecture (Yes, We Have One)
+
+Kite follows a *slightly pretentious* hexagonal/clean architecture. Before you roll your eyes—it actually makes sense here. We have multiple interfaces (CLI + web UI) hitting the same business logic, so the separation helps. Probably.
 
 ```
 kite/
-├── cmd/                    # Main entry point
+├── cmd/                    # Main entry point (shocking)
 ├── internal/
-│   ├── application/        # Business logic
-│   ├── domain/             # Core domain models
-│   ├── infra/
-│   │   ├── adapter/        # CLI commands & API handlers
-│   │   ├── persistence/    # Config file handling
-│   │   └── registry/       # Git/HTTP registry clients
-│   └── version/            # Version info (set by GoReleaser)
-├── pkg/console/            # Pretty CLI output
-├── web/                    # SolidJS web UI
-└── docs/                   # Documentation
+│   ├── application/        # Use cases / business logic
+│   │   ├── add/            # Adding kits to projects
+│   │   ├── describe/       # Describing registry items
+│   │   ├── init/           # Initializing projects
+│   │   ├── list/           # Listing installed kits
+│   │   ├── remove/         # Removing kits
+│   │   └── update/         # Updating kits
+│   ├── domain/             # Core domain models (the pure stuff)
+│   │   ├── install/        # Installation domain logic
+│   │   ├── models/         # Domain entities
+│   │   ├── parse/          # Parsing logic
+│   │   ├── port/           # Port interfaces (hexagonal buzzword)
+│   │   ├── repo/           # Repository patterns
+│   │   ├── scan/           # Scanning logic
+│   │   └── types/          # Domain types
+│   ├── infra/              # Infrastructure (the dirty bits)
+│   │   ├── api/            # HTTP API handlers (for web UI)
+│   │   ├── cli/            # CLI commands (cobra stuff)
+│   │   ├── persistence/    # Config file handling (JSON hell)
+│   │   └── storage/        # Git operations & registry clients
+│   └── version/            # Version info (GoReleaser magic)
+├── pkg/console/            # Pretty CLI output (colors!)
+├── web/                    # SolidJS web UI (currently EMBEDDED, because MVP)
+│   ├── dist/               # Built assets that get embedded in the Go binary
+│   ├── src/                # Actual SolidJS code
+│   └── embed.go            # The magic that shoves the web UI into the binary
+└── docs/                   # Documentation (you're reading it)
 ```
+
+**The Embedded Web Situation:**
+
+Yeah, the web UI is currently embedded directly into the Go binary (`web/embed.go`). This is an *MVP decision*. Eventually™ we might separate it into a proper client-server architecture, but for now, having a single binary that contains both CLI and web UI is actually convenient. Don't @ me.
 
 **Naming conventions:**
 
-- Commands live in `internal/infra/cli/<command>/`
-- Each command has its own package
-- Keep files focused—one responsibility per file
+- CLI commands live in `internal/infra/cli/<command>/`
+- Application use cases live in `internal/application/<command>/`
+- Each command/use case has its own package
+- Domain stuff stays pure (no infrastructure dependencies)
+- Keep files focused—one responsibility per file (we're not monsters)
 
 ### What We Need
 
