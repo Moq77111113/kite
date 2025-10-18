@@ -1,14 +1,15 @@
 import { getAvatarNumber } from '@/lib/utils';
 import type { KitSummary } from '@/types/kit';
 import { Link } from '@tanstack/solid-router';
+import { Show } from 'solid-js';
 
 interface KitCardProps {
   kit: KitSummary;
 }
 
 export default function KitCard(props: KitCardProps) {
-  const primaryTag = () => props.kit.tags[0] || 'general';
-  const avatarNum = () => getAvatarNumber(primaryTag());
+  const primaryTag = () => props.kit.tags[0];
+  const avatarNum = () => getAvatarNumber(primaryTag() ?? props.kit.name);
 
   return (
     <Link
@@ -17,9 +18,11 @@ export default function KitCard(props: KitCardProps) {
       class="block rounded-xl border border-border bg-card p-5 transition-all hover:border-accent hover:shadow-lg group"
     >
       <div class="flex items-start justify-between mb-3">
-        <span class="px-2.5 py-1 text-xs rounded-md bg-muted/50 text-muted-foreground capitalize font-medium">
-          {primaryTag()}
-        </span>
+        <Show when={primaryTag()}>
+          <span class="px-2.5 py-1 text-xs rounded-md bg-muted/50 text-muted-foreground capitalize font-medium">
+            {primaryTag()}
+          </span>
+        </Show>
         <div
           class={`size-14 rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform bg-[var(--avatar)]`}
           style={{
@@ -42,8 +45,10 @@ export default function KitCard(props: KitCardProps) {
 
       <div class="flex items-center gap-3 text-xs text-muted-foreground pt-2 border-t border-border/50">
         <span class="font-medium">v{props.kit.version}</span>
-        <span class="opacity-50">•</span>
-        <span>by {props.kit.author}</span>
+        <Show when={props.kit.author}>
+          <span class="opacity-50">•</span>
+          <span>by {props.kit.author}</span>
+        </Show>
       </div>
     </Link>
   );

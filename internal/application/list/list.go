@@ -28,6 +28,7 @@ type Item struct {
 	Version     string   `json:"version"`
 	Description string   `json:"description"`
 	Tags        []string `json:"tags"`
+	Author      string   `json:"author"`
 	Installed   bool     `json:"installed"`
 }
 
@@ -61,13 +62,18 @@ func (s *List) enrichWithInstallationStatus(available []registry.KitSummary) []I
 
 	var items []Item
 	for _, kit := range available {
-		items = append(items, Item{
+		item := Item{
 			Name:        kit.Name,
 			Version:     kit.Version,
 			Description: kit.Description,
 			Tags:        kit.Tags,
 			Installed:   installedMap[kit.Name],
-		})
+			Author:      kit.Author,
+		}
+		if item.Tags == nil {
+			item.Tags = []string{}
+		}
+		items = append(items, item)
 	}
 
 	return items

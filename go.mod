@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/creasty/defaults v1.8.0
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kr/pretty v0.3.1 // indirect

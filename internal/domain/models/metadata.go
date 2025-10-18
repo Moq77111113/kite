@@ -1,13 +1,15 @@
 package models
 
-import registry "github.com/moq77111113/kite/internal/domain/types"
+import (
+	registry "github.com/moq77111113/kite/internal/domain/types"
+)
 
 type Metadata struct {
 	Name        string              `yaml:"name"`
 	Description string              `yaml:"description"`
 	Version     string              `yaml:"version"`
-	Author      string              `yaml:"author"`
 	Tags        []string            `yaml:"tags"`
+	Author      string              `yaml:"author"`
 	Variables   []registry.Variable `yaml:"variables,omitempty"`
 }
 

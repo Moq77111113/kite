@@ -8,7 +8,7 @@ interface QuickSearchItemProps {
 }
 
 export default function QuickSearchItem(props: QuickSearchItemProps) {
-  const avatarNum = () => getAvatarNumber(props.kit.tags[0] || 'general');
+  const avatarNum = () => getAvatarNumber(props.kit.tags[0] ?? props.kit.name);
 
   return (
     <button

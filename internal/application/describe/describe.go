@@ -31,6 +31,7 @@ type Item struct {
 	Installed   bool            `json:"installed"`
 	Files       []types.KitFile `json:"files"`
 	Readme      string          `json:"readme"`
+	Author      string          `json:"author"`
 }
 
 func (s *Describe) Execute(name string) (Item, error) {
@@ -61,5 +62,6 @@ func (s *Describe) Execute(name string) (Item, error) {
 		Installed:   installedMap[detail.Name],
 		Files:       detail.Files,
 		Readme:      detail.Readme,
+		Author:      detail.Author,
 	}, nil
 }

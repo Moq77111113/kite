@@ -36,15 +36,12 @@ export default function Sidebar(props: SidebarProps) {
 
   const categorizedKits = createMemo(() => {
     const categories = new Map<string, number>();
-
-    filteredKits().forEach((kit) => {
-      const tags = kit.tags.length > 0 ? kit.tags : ['general'];
-      tags.forEach((tag) => {
+    for (const kit of filteredKits()) {
+      for (const tag of kit.tags) {
         const normalizedTag = tag.toLowerCase();
         categories.set(normalizedTag, (categories.get(normalizedTag) || 0) + 1);
-      });
-    });
-
+      }
+    }
     return Array.from(categories.entries()).sort((a, b) =>
       a[0].localeCompare(b[0])
     );
