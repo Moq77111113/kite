@@ -1,25 +1,19 @@
-import { useQuickSearch } from "@/hooks/useQuickSearch";
-import { searchStore } from "@/stores/searchStore";
-import type { TemplateSummary } from "@/types/template";
-import { Show } from "solid-js";
-import QuickSearchFooter from "./QuickSearchFooter";
-import QuickSearchInput from "./QuickSearchInput";
-import QuickSearchOverlay from "./QuickSearchOverlay";
-import QuickSearchResults from "./QuickSearchResults";
+import { useQuickSearch } from '@/hooks/useQuickSearch';
+import { searchStore } from '@/stores/searchStore';
+import type { KitSummary } from '@/types/kit';
+import { Show } from 'solid-js';
+import QuickSearchFooter from './QuickSearchFooter';
+import QuickSearchInput from './QuickSearchInput';
+import QuickSearchOverlay from './QuickSearchOverlay';
+import QuickSearchResults from './QuickSearchResults';
 
 interface QuickSearchProps {
-  templates: TemplateSummary[];
+  kits: KitSummary[];
 }
 
 export default function QuickSearch(props: QuickSearchProps) {
-  const {
-    query,
-    setQuery,
-    selectedIndex,
-    filteredTemplates,
-    selectTemplate,
-    inputRef,
-  } = useQuickSearch(props.templates);
+  const { query, setQuery, selectedIndex, filteredKits, selectKit, inputRef } =
+    useQuickSearch(props.kits);
 
   return (
     <Show when={searchStore.isOpen}>
@@ -30,9 +24,9 @@ export default function QuickSearch(props: QuickSearchProps) {
           inputRef={inputRef}
         />
         <QuickSearchResults
-          templates={filteredTemplates()}
+          kits={filteredKits()}
           selectedIndex={selectedIndex()}
-          onSelectTemplate={selectTemplate}
+          onSelectKit={selectKit}
         />
         <QuickSearchFooter />
       </QuickSearchOverlay>

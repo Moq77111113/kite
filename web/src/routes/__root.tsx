@@ -1,9 +1,9 @@
 import { createRootRoute } from "@tanstack/solid-router";
-import { fetchTemplates } from "../api/templates";
+import { fetchKits } from "@/api/kits";
 import MainLayout from "../layouts/MainLayout";
 
 export const Route = createRootRoute({
-  loader: () => fetchTemplates(),
+  loader: () => fetchKits(),
   component: MainLayout,
-  errorComponent: (e) => <div>Failed to load templates {e.error.message}</div>,
+  errorComponent: (e) => <div>Failed to load kits {e.error.message}</div>,
 });

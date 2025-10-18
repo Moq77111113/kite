@@ -1,19 +1,19 @@
-import { searchStore } from "@/stores/searchStore";
-import type { TemplateSummary } from "@/types/template";
-import { useNavigate } from "@tanstack/solid-router";
-import { createEffect, createSignal, onCleanup } from "solid-js";
+import { searchStore } from '@/stores/searchStore';
+import type { KitSummary } from '@/types/kit';
+import { useNavigate } from '@tanstack/solid-router';
+import { createEffect, createSignal, onCleanup } from 'solid-js';
 
-export const useQuickSearch = (templates: TemplateSummary[]) => {
-  const [query, setQuery] = createSignal("");
+export const useQuickSearch = (kits: KitSummary[]) => {
+  const [query, setQuery] = createSignal('');
   const [selectedIndex, setSelectedIndex] = createSignal(0);
   const navigate = useNavigate();
   let inputRef: HTMLInputElement | undefined;
 
-  const filteredTemplates = () => {
+  const filteredKits = () => {
     const q = query().toLowerCase();
-    if (!q) return templates.slice(0, 8);
+    if (!q) return kits.slice(0, 8);
 
-    return templates
+    return kits
       .filter(
         (t) =>
           t.name.toLowerCase().includes(q) ||
@@ -23,8 +23,8 @@ export const useQuickSearch = (templates: TemplateSummary[]) => {
       .slice(0, 8);
   };
 
-  const selectTemplate = (template: TemplateSummary) => {
-    navigate({ to: "/templates/$name", params: { name: template.name } });
+  const selectKit = (kit: KitSummary) => {
+    navigate({ to: '/kits/$name', params: { name: kit.name } });
     searchStore.close();
   };
 
@@ -39,9 +39,7 @@ export const useQuickSearch = (templates: TemplateSummary[]) => {
         },
         ArrowDown: () => {
           e.preventDefault();
-          setSelectedIndex((i) =>
-            Math.min(i + 1, filteredTemplates().length - 1)
-          );
+          setSelectedIndex((i) => Math.min(i + 1, filteredKits().length - 1));
         },
         ArrowUp: () => {
           e.preventDefault();
@@ -49,16 +47,16 @@ export const useQuickSearch = (templates: TemplateSummary[]) => {
         },
         Enter: () => {
           e.preventDefault();
-          const selected = filteredTemplates()[selectedIndex()];
-          if (selected) selectTemplate(selected);
+          const selected = filteredKits()[selectedIndex()];
+          if (selected) selectKit(selected);
         },
       };
 
       handlers[e.key]?.();
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    onCleanup(() => document.removeEventListener("keydown", handleKeyDown));
+    document.addEventListener('keydown', handleKeyDown);
+    onCleanup(() => document.removeEventListener('keydown', handleKeyDown));
   });
 
   createEffect(() => {
@@ -67,7 +65,7 @@ export const useQuickSearch = (templates: TemplateSummary[]) => {
 
   createEffect(() => {
     if (searchStore.isOpen) {
-      setQuery("");
+      setQuery('');
       setSelectedIndex(0);
       setTimeout(() => inputRef?.focus(), 0);
     }
@@ -77,8 +75,8 @@ export const useQuickSearch = (templates: TemplateSummary[]) => {
     query,
     setQuery,
     selectedIndex,
-    filteredTemplates,
-    selectTemplate,
+    filteredKits,
+    selectKit,
     inputRef: (ref: HTMLInputElement) => (inputRef = ref),
   };
 };

@@ -1,44 +1,44 @@
-import CategoryList from "@/components/features/CategoryList";
-import TemplateList from "@/components/features/TemplateList";
-import ViewModeToggle from "@/components/features/ViewModeToggle";
-import { FireIcon } from "@/components/ui/icons";
-import SearchBar from "@/components/ui/SearchBar";
-import { SITE_CONFIG } from "@/lib/site";
-import { fireStore } from "@/stores/fireStore";
-import type { TemplatesResponse } from "@/types/template";
-import { Link } from "@tanstack/solid-router";
-import { Show, createMemo, createSignal } from "solid-js";
+import CategoryList from '@/components/features/CategoryList';
+import KitList from '@/components/features/KitList';
+import ViewModeToggle from '@/components/features/ViewModeToggle';
+import { FireIcon } from '@/components/ui/icons';
+import SearchBar from '@/components/ui/SearchBar';
+import { SITE_CONFIG } from '@/lib/site';
+import { fireStore } from '@/stores/fireStore';
+import type { KitsResponse } from '@/types/kit';
+import { Link } from '@tanstack/solid-router';
+import { Show, createMemo, createSignal } from 'solid-js';
 
 interface SidebarProps {
-  templates: TemplatesResponse;
+  data: KitsResponse;
   isOpen: boolean;
   onClose: () => void;
 }
 
-type ViewMode = "list" | "categories";
+type ViewMode = 'list' | 'categories';
 
 export default function Sidebar(props: SidebarProps) {
-  const [viewMode, setViewMode] = createSignal<ViewMode>("categories");
-  const [searchQuery, setSearchQuery] = createSignal("");
+  const [viewMode, setViewMode] = createSignal<ViewMode>('categories');
+  const [searchQuery, setSearchQuery] = createSignal('');
 
-  const filteredTemplates = createMemo(() => {
+  const filteredKits = createMemo(() => {
     const query = searchQuery().toLowerCase();
-    if (!query) return props.templates.templates || [];
+    if (!query) return props.data.kits || [];
 
-    return (props.templates.templates || []).filter((template) => {
-      if (viewMode() === "categories") {
-        return template.tags.some((tag) => tag.toLowerCase().includes(query));
+    return (props.data.kits || []).filter((kit) => {
+      if (viewMode() === 'categories') {
+        return kit.tags.some((tag) => tag.toLowerCase().includes(query));
       }
 
-      return template.name.toLowerCase().includes(query);
+      return kit.name.toLowerCase().includes(query);
     });
   });
 
-  const categorizedTemplates = createMemo(() => {
+  const categorizedKits = createMemo(() => {
     const categories = new Map<string, number>();
 
-    filteredTemplates().forEach((template) => {
-      const tags = template.tags.length > 0 ? template.tags : ["general"];
+    filteredKits().forEach((kit) => {
+      const tags = kit.tags.length > 0 ? kit.tags : ['general'];
       tags.forEach((tag) => {
         const normalizedTag = tag.toLowerCase();
         categories.set(normalizedTag, (categories.get(normalizedTag) || 0) + 1);
@@ -62,8 +62,8 @@ export default function Sidebar(props: SidebarProps) {
       <aside
         class="fixed left-0 top-0 h-svh w-64 border-r border-sidebar-border bg-sidebar z-50 transition-transform duration-200 lg:translate-x-0"
         classList={{
-          "-translate-x-full": !props.isOpen,
-          "translate-x-0": props.isOpen,
+          '-translate-x-full': !props.isOpen,
+          'translate-x-0': props.isOpen,
         }}
       >
         <div class="flex h-full flex-col">
@@ -83,16 +83,16 @@ export default function Sidebar(props: SidebarProps) {
               <SearchBar
                 value={searchQuery()}
                 onInput={setSearchQuery}
-                placeholder="Search templates..."
+                placeholder="Search kits..."
               />
             </div>
 
-            <Show when={viewMode() === "list"}>
-              <TemplateList templates={filteredTemplates()} />
+            <Show when={viewMode() === 'list'}>
+              <KitList kits={filteredKits()} />
             </Show>
 
-            <Show when={viewMode() === "categories"}>
-              <CategoryList categories={categorizedTemplates()} />
+            <Show when={viewMode() === 'categories'}>
+              <CategoryList categories={categorizedKits()} />
             </Show>
           </nav>
 

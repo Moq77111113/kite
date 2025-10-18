@@ -9,67 +9,42 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Config represents the kite.yaml configuration file
 type Config struct {
-	Version   string              `yaml:"version"`
-	Registry  string              `yaml:"registry"`
-	Path      string              `yaml:"path"`
-	Templates map[string]Template `yaml:"templates"`
+	Version  string         `yaml:"version"`
+	Registry string         `yaml:"registry"`
+	Path     string         `yaml:"path"`
+	Kits     map[string]Kit `yaml:"kits"`
 }
 
-// Template represents an installed template
-type Template struct {
+type Kit struct {
 	Version   string `yaml:"version"`
 	Installed int64  `yaml:"installed"`
 }
 
 const (
-	DefaultPath        = "./"
-	ConfigFileName     = "kite.yaml"
-	GlobalConfigName   = "config.yaml"
+	DefaultPath      = "./"
+	ConfigFileName   = "kite.yaml"
+	GlobalConfigName = "config.yaml"
 )
 
-// GetConfigPath returns the path to the kite config file
-// Priority:
-//   1. --config flag (passed as customPath)
-//   2. ./kite.json in current directory (project-specific)
-//   3. ~/.kite/config.json (global fallback)
 func GetConfigPath(customPath string) string {
-	// 1. Custom path from flag has highest priority
 	if customPath != "" {
 		return customPath
 	}
 
-	// 2. Check for kite.json in current directory (project-specific)
 	projectConfig := filepath.Join(".", ConfigFileName)
 	if _, err := os.Stat(projectConfig); err == nil {
 		return projectConfig
 	}
 
-	// 3. Fallback to global config in ~/.kite/config.json
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		// If can't get home dir, use current directory as last resort
 		return projectConfig
 	}
 
 	return filepath.Join(homeDir, ".kite", GlobalConfigName)
 }
 
-// GetConfigPathForLoad is like GetConfigPath but doesn't create anything
-func GetConfigPathForLoad(customPath string) (string, error) {
-	path := GetConfigPath(customPath)
-
-	// Verify file exists
-	if _, err := os.Stat(path); err != nil {
-		return "", fmt.Errorf("config not found at %s (run 'kite init' first)", path)
-	}
-
-	return path, nil
-}
-
-// Load reads the kite configuration file
-// customPath: optional --config flag value
 func Load(customPath string) (*Config, error) {
 	configPath := GetConfigPath(customPath)
 
@@ -86,12 +61,9 @@ func Load(customPath string) (*Config, error) {
 	return &config, nil
 }
 
-// Save writes the configuration to the config file
-// customPath: optional --config flag value
 func Save(config *Config, customPath string) error {
 	configPath := GetConfigPath(customPath)
 
-	// Ensure directory exists
 	configDir := filepath.Dir(configPath)
 	if err := os.MkdirAll(configDir, 0755); err != nil {
 		return fmt.Errorf("failed to create config directory: %w", err)
@@ -105,16 +77,12 @@ func Save(config *Config, customPath string) error {
 	return os.WriteFile(configPath, data, 0644)
 }
 
-// Exists checks if kite config file exists
-// customPath: optional --config flag value
 func Exists(customPath string) bool {
 	configPath := GetConfigPath(customPath)
 	_, err := os.Stat(configPath)
 	return err == nil
 }
 
-// Init creates a new kite configuration file
-// Creates in current directory (./kite.yaml) if --local flag, otherwise in ~/.kite/config.yaml
 func Init(registry, path string, local bool, customPath string) (*Config, error) {
 	if path == "" {
 		path = DefaultPath
@@ -124,10 +92,10 @@ func Init(registry, path string, local bool, customPath string) (*Config, error)
 	}
 
 	config := &Config{
-		Version:   "1.0.0",
-		Registry:  registry,
-		Path:      path,
-		Templates: make(map[string]Template),
+		Version:  "1.0.0",
+		Registry: registry,
+		Path:     path,
+		Kits:     make(map[string]Kit),
 	}
 
 	if err := os.MkdirAll(path, 0755); err != nil {
@@ -150,22 +118,21 @@ func Init(registry, path string, local bool, customPath string) (*Config, error)
 	return config, nil
 }
 
-func (c *Config) AddTemplate(name, version string) {
-	if c.Templates == nil {
-		c.Templates = make(map[string]Template)
+func (c *Config) AddKit(name, version string) {
+	if c.Kits == nil {
+		c.Kits = make(map[string]Kit)
 	}
-	c.Templates[name] = Template{
+	c.Kits[name] = Kit{
 		Version:   version,
 		Installed: time.Now().Unix(),
 	}
 }
 
-func (c *Config) RemoveTemplate(name string) {
-	delete(c.Templates, name)
+func (c *Config) RemoveKit(name string) {
+	delete(c.Kits, name)
 }
 
-
-func (c *Config) GetTemplate(name string) (Template, bool) {
-	t, ok := c.Templates[name]
+func (c *Config) GetKit(name string) (Kit, bool) {
+	t, ok := c.Kits[name]
 	return t, ok
 }

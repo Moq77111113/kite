@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TemplatesNameRouteImport } from './routes/templates/$name'
+import { Route as KitsNameRouteImport } from './routes/kits/$name'
 import { Route as CategoriesNameRouteImport } from './routes/categories/$name'
 
 const IndexRoute = IndexRouteImport.update({
@@ -18,9 +18,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TemplatesNameRoute = TemplatesNameRouteImport.update({
-  id: '/templates/$name',
-  path: '/templates/$name',
+const KitsNameRoute = KitsNameRouteImport.update({
+  id: '/kits/$name',
+  path: '/kits/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriesNameRoute = CategoriesNameRouteImport.update({
@@ -32,31 +32,31 @@ const CategoriesNameRoute = CategoriesNameRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/categories/$name': typeof CategoriesNameRoute
-  '/templates/$name': typeof TemplatesNameRoute
+  '/kits/$name': typeof KitsNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/categories/$name': typeof CategoriesNameRoute
-  '/templates/$name': typeof TemplatesNameRoute
+  '/kits/$name': typeof KitsNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/categories/$name': typeof CategoriesNameRoute
-  '/templates/$name': typeof TemplatesNameRoute
+  '/kits/$name': typeof KitsNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categories/$name' | '/templates/$name'
+  fullPaths: '/' | '/categories/$name' | '/kits/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categories/$name' | '/templates/$name'
-  id: '__root__' | '/' | '/categories/$name' | '/templates/$name'
+  to: '/' | '/categories/$name' | '/kits/$name'
+  id: '__root__' | '/' | '/categories/$name' | '/kits/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CategoriesNameRoute: typeof CategoriesNameRoute
-  TemplatesNameRoute: typeof TemplatesNameRoute
+  KitsNameRoute: typeof KitsNameRoute
 }
 
 declare module '@tanstack/solid-router' {
@@ -68,11 +68,11 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/templates/$name': {
-      id: '/templates/$name'
-      path: '/templates/$name'
-      fullPath: '/templates/$name'
-      preLoaderRoute: typeof TemplatesNameRouteImport
+    '/kits/$name': {
+      id: '/kits/$name'
+      path: '/kits/$name'
+      fullPath: '/kits/$name'
+      preLoaderRoute: typeof KitsNameRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categories/$name': {
@@ -88,7 +88,7 @@ declare module '@tanstack/solid-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoriesNameRoute: CategoriesNameRoute,
-  TemplatesNameRoute: TemplatesNameRoute,
+  KitsNameRoute: KitsNameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
