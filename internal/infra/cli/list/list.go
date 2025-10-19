@@ -25,7 +25,7 @@ func runList(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("dependencies not found in context")
 	}
 
-	ls := listapp.New(c.Repository, c.InstallationRegistry)
+	ls := listapp.New(c.Repository, c.Tracker)
 
 	kits, err := ls.Execute()
 	if err != nil {

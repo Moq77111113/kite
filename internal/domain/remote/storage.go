@@ -1,4 +1,4 @@
-package port
+package remote
 
 type Storage interface {
 	ListDirectories() ([]string, error)

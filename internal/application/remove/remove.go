@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/moq77111113/kite/internal/domain/install"
+	"github.com/moq77111113/kite/internal/domain/local"
 )
 
 type Remove struct {
-	setupService *install.KitLifecycle
+	setupService *local.Manager
 }
 
-func New(setupService *install.KitLifecycle) *Remove {
+func New(setupService *local.Manager) *Remove {
 	return &Remove{
 		setupService: setupService,
 	}

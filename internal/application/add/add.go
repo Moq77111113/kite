@@ -3,22 +3,22 @@ package add
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/domain/install"
-	"github.com/moq77111113/kite/internal/domain/repo"
+	"github.com/moq77111113/kite/internal/domain/local"
+	"github.com/moq77111113/kite/internal/domain/remote"
 )
 
 type Add struct {
-	setupService    *install.KitLifecycle
-	conflictChecker *repo.ConflictChecker
-	installations   *install.LocalKits
-	repository      *repo.Repository
+	setupService    *local.Manager
+	conflictChecker *local.ConflictChecker
+	installations   *local.Tracker
+	repository      *remote.Repository
 }
 
 func New(
-	setupService *install.KitLifecycle,
-	conflictChecker *repo.ConflictChecker,
-	installations *install.LocalKits,
-	repository *repo.Repository,
+	setupService *local.Manager,
+	conflictChecker *local.ConflictChecker,
+	installations *local.Tracker,
+	repository *remote.Repository,
 ) *Add {
 	return &Add{
 		setupService:    setupService,

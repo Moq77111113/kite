@@ -1,22 +1,22 @@
-package install
+package local
 
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/domain/port"
+	"github.com/moq77111113/kite/internal/domain/models"
 )
 
-type LocalKits struct {
-	store port.KitRegistry
+type Tracker struct {
+	store models.KitRegistry
 }
 
-func NewLocalKits(store port.KitRegistry) *LocalKits {
-	return &LocalKits{
+func NewTracker(store models.KitRegistry) *Tracker {
+	return &Tracker{
 		store: store,
 	}
 }
 
-func (r *LocalKits) Record(name, version string) error {
+func (r *Tracker) Record(name, version string) error {
 	if name == "" {
 		return fmt.Errorf("kit name cannot be empty")
 	}
@@ -28,7 +28,7 @@ func (r *LocalKits) Record(name, version string) error {
 	return r.store.Add(name, version)
 }
 
-func (r *LocalKits) Unregister(name string) error {
+func (r *Tracker) Unregister(name string) error {
 	if name == "" {
 		return fmt.Errorf("kit name cannot be empty")
 	}
@@ -41,7 +41,7 @@ func (r *LocalKits) Unregister(name string) error {
 	return r.store.Remove(name)
 }
 
-func (r *LocalKits) GetInstalled(name string) (*port.InstalledKit, error) {
+func (r *Tracker) GetInstalled(name string) (*models.InstalledKit, error) {
 	if name == "" {
 		return nil, fmt.Errorf("kit name cannot be empty")
 	}
@@ -49,16 +49,16 @@ func (r *LocalKits) GetInstalled(name string) (*port.InstalledKit, error) {
 	return r.store.Get(name)
 }
 
-func (r *LocalKits) ListInstalled() []port.InstalledKit {
+func (r *Tracker) ListInstalled() []models.InstalledKit {
 	return r.store.List()
 }
 
-func (r *LocalKits) IsInstalled(name string) bool {
+func (r *Tracker) IsInstalled(name string) bool {
 	_, err := r.store.Get(name)
 	return err == nil
 }
 
-func (r *LocalKits) UpdateVersion(name, version string) error {
+func (r *Tracker) UpdateVersion(name, version string) error {
 	if !r.IsInstalled(name) {
 		return fmt.Errorf("kit %s is not installed", name)
 	}

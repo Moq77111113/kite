@@ -1,6 +1,6 @@
-package types
+package models
 
-type KitFile struct {
+type File struct {
 	Path    string `json:"path"`
 	Content string `json:"content"`
 }

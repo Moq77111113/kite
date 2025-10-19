@@ -1,26 +1,26 @@
-package install
+package local
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 
-	registry "github.com/moq77111113/kite/internal/domain/types"
+	"github.com/moq77111113/kite/internal/domain/models"
 )
 
-type KitLifecycle struct {
+type Manager struct {
 	installer     FsInstaller
-	installations *LocalKits
+	installations *Tracker
 }
 
-func NewKitLifecycle(installer FsInstaller, installations *LocalKits) *KitLifecycle {
-	return &KitLifecycle{
+func NewManager(installer FsInstaller, installations *Tracker) *Manager {
+	return &Manager{
 		installer:     installer,
 		installations: installations,
 	}
 }
 
-func (s *KitLifecycle) Install(kit *registry.KitDetailResponse, destPath string) error {
+func (s *Manager) Install(kit *models.Kit, destPath string) error {
 	if kit == nil {
 		return fmt.Errorf("kit cannot be nil")
 	}
@@ -44,7 +44,7 @@ func (s *KitLifecycle) Install(kit *registry.KitDetailResponse, destPath string)
 	return nil
 }
 
-func (s *KitLifecycle) Uninstall(kitPath, kitName string) error {
+func (s *Manager) Uninstall(kitPath, kitName string) error {
 	if kitPath == "" {
 		return fmt.Errorf("kit path cannot be empty")
 	}
@@ -69,7 +69,7 @@ func (s *KitLifecycle) Uninstall(kitPath, kitName string) error {
 	return nil
 }
 
-func (s *KitLifecycle) Update(kit *registry.KitDetailResponse, destPath string) error {
+func (s *Manager) Update(kit *models.Kit, destPath string) error {
 	if err := s.installer.Install(kit, destPath); err != nil {
 		return fmt.Errorf("failed to update kit files: %w", err)
 	}
@@ -81,7 +81,7 @@ func (s *KitLifecycle) Update(kit *registry.KitDetailResponse, destPath string) 
 	return nil
 }
 
-func (s *KitLifecycle) CalculatePath(basePath, kitName, customPath string) string {
+func (s *Manager) CalculatePath(basePath, kitName, customPath string) string {
 	if customPath != "" {
 		return customPath
 	}

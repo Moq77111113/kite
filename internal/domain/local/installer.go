@@ -1,15 +1,15 @@
-package install
+package local
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/moq77111113/kite/internal/domain/types"
+	"github.com/moq77111113/kite/internal/domain/models"
 )
 
 type FsInstaller interface {
-	Install(kit *types.KitDetailResponse, destPath string) error
+	Install(kit *models.Kit, destPath string) error
 }
 
 type installer struct{}
@@ -18,7 +18,7 @@ func NewFsInstaller() FsInstaller {
 	return &installer{}
 }
 
-func (i *installer) Install(kit *types.KitDetailResponse, destPath string) error {
+func (i *installer) Install(kit *models.Kit, destPath string) error {
 	if err := os.MkdirAll(destPath, 0755); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
@@ -32,7 +32,7 @@ func (i *installer) Install(kit *types.KitDetailResponse, destPath string) error
 	return nil
 }
 
-func (i *installer) writeFile(basePath string, file types.KitFile) error {
+func (i *installer) writeFile(basePath string, file models.File) error {
 	filePath := filepath.Join(basePath, file.Path)
 	dir := filepath.Dir(filePath)
 

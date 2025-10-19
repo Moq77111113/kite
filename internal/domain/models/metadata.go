@@ -1,20 +1,16 @@
 package models
 
-import (
-	registry "github.com/moq77111113/kite/internal/domain/types"
-)
-
 type Metadata struct {
-	Name        string              `yaml:"name"`
-	Description string              `yaml:"description"`
-	Version     string              `yaml:"version"`
-	Tags        []string            `yaml:"tags"`
-	Author      string              `yaml:"author"`
-	Variables   []registry.Variable `yaml:"variables,omitempty"`
+	Name        string     `yaml:"name"`
+	Description string     `yaml:"description"`
+	Version     string     `yaml:"version"`
+	Tags        []string   `yaml:"tags"`
+	Author      string     `yaml:"author"`
+	Variables   []Variable `yaml:"variables,omitempty"`
 }
 
-func (m *Metadata) ToKitSummary() registry.KitSummary {
-	return registry.KitSummary{
+func (m *Metadata) ToKitSummary() KitSummary {
+	return KitSummary{
 		Name:        m.Name,
 		Description: m.Description,
 		Version:     m.Version,
@@ -23,8 +19,8 @@ func (m *Metadata) ToKitSummary() registry.KitSummary {
 	}
 }
 
-func (m *Metadata) ToKitDetail(files []registry.KitFile, readme string) *registry.KitDetailResponse {
-	return &registry.KitDetailResponse{
+func (m *Metadata) ToKitDetail(files []File, readme string) *Kit {
+	return &Kit{
 		Name:        m.Name,
 		Version:     m.Version,
 		Author:      m.Author,

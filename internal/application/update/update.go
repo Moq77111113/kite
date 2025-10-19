@@ -3,22 +3,22 @@ package update
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/domain/install"
-	"github.com/moq77111113/kite/internal/domain/repo"
+	"github.com/moq77111113/kite/internal/domain/local"
+	"github.com/moq77111113/kite/internal/domain/remote"
 )
 
 type Update struct {
-	repository    *repo.Repository
-	installations *install.LocalKits
-	versionComp   *repo.VersionComparator
-	setupService  *install.KitLifecycle
+	repository    *remote.Repository
+	installations *local.Tracker
+	versionComp   *local.VersionComparator
+	setupService  *local.Manager
 }
 
 func New(
-	repository *repo.Repository,
-	installations *install.LocalKits,
-	versionComp *repo.VersionComparator,
-	setupService *install.KitLifecycle,
+	repository *remote.Repository,
+	installations *local.Tracker,
+	versionComp *local.VersionComparator,
+	setupService *local.Manager,
 ) *Update {
 	return &Update{
 		repository:    repository,

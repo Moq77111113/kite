@@ -1,9 +1,8 @@
 package container
 
 import (
-	"github.com/moq77111113/kite/internal/domain/install"
-	"github.com/moq77111113/kite/internal/domain/port"
-	"github.com/moq77111113/kite/internal/domain/repo"
+	"github.com/moq77111113/kite/internal/domain/local"
+	"github.com/moq77111113/kite/internal/domain/remote"
 	"github.com/moq77111113/kite/internal/infra/persistence/config"
 	"github.com/moq77111113/kite/internal/infra/storage/git"
 )
@@ -13,14 +12,12 @@ type Key string
 const ContainerKey Key = "container"
 
 type Container struct {
-	Storage              port.Storage
-	Repository           *repo.Repository
-	Config               *config.Config
-	InstallationRegistry *install.LocalKits
-	FsInstaller          install.FsInstaller
-	KitLifecycle         *install.KitLifecycle
-	ConflictChecker      *repo.ConflictChecker
-	VersionComparator    *repo.VersionComparator
+	Config            *config.Config
+	Repository        *remote.Repository
+	Tracker           *local.Tracker
+	Manager           *local.Manager
+	ConflictChecker   *local.ConflictChecker
+	VersionComparator *local.VersionComparator
 }
 
 func NewContainer(cfgPath string) (*Container, error) {
@@ -35,23 +32,21 @@ func NewContainer(cfgPath string) (*Container, error) {
 		return nil, err
 	}
 
-	repository := repo.NewRepository(storage)
+	repository := remote.NewRepository(storage)
 
-	installer := install.NewFsInstaller()
-	locals := install.NewLocalKits(config.NewKitRegistry(cfg))
-	kitLifecycle := install.NewKitLifecycle(installer, locals)
+	installer := local.NewFsInstaller()
+	locals := local.NewTracker(config.NewKitRegistry(cfg))
+	kitLifecycle := local.NewManager(installer, locals)
 
-	conflictChecker := repo.NewConflictChecker()
-	versionComparator := repo.NewVersionComparator()
+	conflictChecker := local.NewConflictChecker()
+	versionComparator := local.NewVersionComparator()
 
 	return &Container{
-		FsInstaller:          installer,
-		Repository:           repository,
-		Storage:              storage,
-		Config:               cfg,
-		InstallationRegistry: locals,
-		ConflictChecker:      conflictChecker,
-		KitLifecycle:         kitLifecycle,
-		VersionComparator:    versionComparator,
+		Config:            cfg,
+		Repository:        repository,
+		Tracker:           locals,
+		Manager:           kitLifecycle,
+		ConflictChecker:   conflictChecker,
+		VersionComparator: versionComparator,
 	}, nil
 }

@@ -1,4 +1,4 @@
-package types
+package models
 
 type KitListResponse struct {
 	Kits []KitSummary `json:"kits"`

@@ -29,7 +29,7 @@ func (s *Server) healthCheck(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) listKits(w http.ResponseWriter, r *http.Request) {
 
-	listSvc := list.New(s.container.Repository, s.container.InstallationRegistry)
+	listSvc := list.New(s.container.Repository, s.container.Tracker)
 	kits, err := listSvc.Execute()
 
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *Server) getKit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	desc := describe.New(s.container.Repository, s.container.InstallationRegistry)
+	desc := describe.New(s.container.Repository, s.container.Tracker)
 
 	item, err := desc.Execute(name)
 	if err != nil {

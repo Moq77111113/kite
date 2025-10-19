@@ -34,9 +34,9 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 
 	updateSvc := updateapp.New(
 		c.Repository,
-		c.InstallationRegistry,
+		c.Tracker,
 		c.VersionComparator,
-		c.KitLifecycle,
+		c.Manager,
 	)
 	var updates []updateapp.Check
 	err := console.Spinner("Checking for updates", func() error {

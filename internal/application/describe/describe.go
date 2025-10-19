@@ -3,19 +3,19 @@ package describe
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/domain/install"
-	"github.com/moq77111113/kite/internal/domain/repo"
-	"github.com/moq77111113/kite/internal/domain/types"
+	"github.com/moq77111113/kite/internal/domain/local"
+	"github.com/moq77111113/kite/internal/domain/models"
+	"github.com/moq77111113/kite/internal/domain/remote"
 )
 
 type Describe struct {
-	repository    *repo.Repository
-	installations *install.LocalKits
+	repository    *remote.Repository
+	installations *local.Tracker
 }
 
 func New(
-	repository *repo.Repository,
-	installations *install.LocalKits,
+	repository *remote.Repository,
+	installations *local.Tracker,
 ) *Describe {
 	return &Describe{
 		repository:    repository,
@@ -29,7 +29,7 @@ type Item struct {
 	Description string          `json:"description"`
 	Tags        []string        `json:"tags"`
 	Installed   bool            `json:"installed"`
-	Files       []types.KitFile `json:"files"`
+	Files       []models.File `json:"files"`
 	Readme      string          `json:"readme"`
 	Author      string          `json:"author"`
 }

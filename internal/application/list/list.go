@@ -3,19 +3,19 @@ package list
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/domain/install"
-	"github.com/moq77111113/kite/internal/domain/repo"
-	registry "github.com/moq77111113/kite/internal/domain/types"
+	"github.com/moq77111113/kite/internal/domain/local"
+	"github.com/moq77111113/kite/internal/domain/models"
+	"github.com/moq77111113/kite/internal/domain/remote"
 )
 
 type List struct {
-	repository    *repo.Repository
-	installations *install.LocalKits
+	repository    *remote.Repository
+	installations *local.Tracker
 }
 
 func New(
-	repository *repo.Repository,
-	installations *install.LocalKits,
+	repository *remote.Repository,
+	installations *local.Tracker,
 ) *List {
 	return &List{
 		repository:    repository,
@@ -52,7 +52,7 @@ func (s *List) Execute() ([]Item, error) {
 	return s.enrichWithInstallationStatus(available), nil
 }
 
-func (s *List) enrichWithInstallationStatus(available []registry.KitSummary) []Item {
+func (s *List) enrichWithInstallationStatus(available []models.KitSummary) []Item {
 	installed := s.installations.ListInstalled()
 
 	installedMap := make(map[string]bool)

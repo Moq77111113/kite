@@ -81,13 +81,9 @@ kite/
 │   │   ├── remove/         # Removing kits
 │   │   └── update/         # Updating kits
 │   ├── domain/             # Core domain models (the pure stuff)
-│   │   ├── install/        # Installation domain logic
-│   │   ├── models/         # Domain entities
-│   │   ├── parse/          # Parsing logic
-│   │   ├── port/           # Port interfaces (hexagonal buzzword)
-│   │   ├── repo/           # Repository patterns
-│   │   ├── scan/           # Scanning logic
-│   │   └── types/          # Domain types
+│   │   ├── models/         # Domain models & DTOs (Kit, Metadata, etc.)
+│   │   ├── remote/         # Remote kit operations (fetch, list, parse)
+│   │   └── local/          # Local kit operations (install, track, manage)
 │   ├── infra/              # Infrastructure (the dirty bits)
 │   │   ├── api/            # HTTP API handlers (for web UI)
 │   │   ├── cli/            # CLI commands (cobra stuff)

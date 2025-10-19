@@ -1,29 +1,27 @@
-package repo
+package remote
 
 import (
 	"fmt"
 
-	"github.com/moq77111113/kite/internal/domain/port"
-	"github.com/moq77111113/kite/internal/domain/scan"
-	registry "github.com/moq77111113/kite/internal/domain/types"
+	"github.com/moq77111113/kite/internal/domain/models"
 )
 
 type Repository struct {
-	storage port.Storage
+	storage Storage
 }
 
-func NewRepository(store port.Storage) *Repository {
+func NewRepository(store Storage) *Repository {
 	return &Repository{
 		storage: store,
 	}
 }
 
-func (r *Repository) GetKit(name string) (*registry.KitDetailResponse, error) {
+func (r *Repository) GetKit(name string) (*models.Kit, error) {
 	if name == "" {
 		return nil, fmt.Errorf("kit name cannot be empty")
 	}
 
-	kit, err := scan.FindKit(r.storage, name)
+	kit, err := FindKit(r.storage, name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch kit %s: %w", name, err)
 	}
@@ -31,8 +29,8 @@ func (r *Repository) GetKit(name string) (*registry.KitDetailResponse, error) {
 	return kit, nil
 }
 
-func (r *Repository) ListAvailable() ([]registry.KitSummary, error) {
-	kits, err := scan.ScanForKits(r.storage)
+func (r *Repository) ListAvailable() ([]models.KitSummary, error) {
+	kits, err := ScanForKits(r.storage)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list kits: %w", err)
 	}

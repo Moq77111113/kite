@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/moq77111113/kite/internal/domain/port"
+	"github.com/moq77111113/kite/internal/domain/remote"
 	"github.com/moq77111113/kite/pkg/console"
 )
 
@@ -15,7 +15,7 @@ type Storage struct {
 	git       Client
 }
 
-func NewStorage(repoURL string, gitClient Client) (port.Storage, error) {
+func NewStorage(repoURL string, gitClient Client) (remote.Storage, error) {
 	var cachePath string
 	var isLocalRepo bool
 
