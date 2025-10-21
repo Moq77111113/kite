@@ -9,17 +9,17 @@ import (
 )
 
 type Describe struct {
-	repository    *remote.Repository
-	installations *local.Tracker
+	repository *remote.Repository
+	tracker    *local.Tracker
 }
 
 func New(
 	repository *remote.Repository,
-	installations *local.Tracker,
+	tracker *local.Tracker,
 ) *Describe {
 	return &Describe{
-		repository:    repository,
-		installations: installations,
+		repository: repository,
+		tracker:    tracker,
 	}
 }
 
@@ -50,7 +50,7 @@ func (s *Describe) Execute(name string) (Item, error) {
 	}
 
 	installedMap := map[string]bool{}
-	for _, kit := range s.installations.ListInstalled() {
+	for _, kit := range s.tracker.ListInstalled() {
 		installedMap[kit.Name] = true
 	}
 

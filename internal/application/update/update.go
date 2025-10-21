@@ -8,23 +8,23 @@ import (
 )
 
 type Update struct {
-	repository    *remote.Repository
-	installations *local.Tracker
-	versionComp   *local.VersionComparator
-	setupService  *local.Manager
+	repository      *remote.Repository
+	tracker         *local.Tracker
+	versionComp     *local.VersionComparator
+	installer       *local.Installer
 }
 
 func New(
 	repository *remote.Repository,
-	installations *local.Tracker,
+	tracker *local.Tracker,
 	versionComp *local.VersionComparator,
-	setupService *local.Manager,
+	installer *local.Installer,
 ) *Update {
 	return &Update{
-		repository:    repository,
-		installations: installations,
-		versionComp:   versionComp,
-		setupService:  setupService,
+		repository:      repository,
+		tracker:         tracker,
+		versionComp:     versionComp,
+		installer:       installer,
 	}
 }
 
@@ -36,7 +36,7 @@ type Check struct {
 
 func (s *Update) CheckAll() ([]Check, error) {
 	var updates []Check
-	installed := s.installations.ListInstalled()
+	installed := s.tracker.ListInstalled()
 
 	for _, kit := range installed {
 		latest, err := s.repository.GetKit(kit.Name)
@@ -60,7 +60,7 @@ func (s *Update) CheckAll() ([]Check, error) {
 }
 
 func (s *Update) ApplyUpdate(name, basePath string) error {
-	current, err := s.installations.GetInstalled(name)
+	current, err := s.tracker.GetInstalled(name)
 	if err != nil {
 		return fmt.Errorf("kit not installed: %w", err)
 	}
@@ -79,8 +79,8 @@ func (s *Update) ApplyUpdate(name, basePath string) error {
 		return fmt.Errorf("no update available (current: %s, latest: %s)", current.Version, latest.Version)
 	}
 
-	destPath := s.setupService.CalculatePath(basePath, name, "")
-	if err := s.setupService.Update(latest, destPath); err != nil {
+	destPath := s.installer.CalculatePath(basePath, name, "")
+	if err := s.installer.Update(latest, destPath); err != nil {
 		return fmt.Errorf("failed to update kit: %w", err)
 	}
 

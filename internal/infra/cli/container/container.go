@@ -3,6 +3,7 @@ package container
 import (
 	"github.com/moq77111113/kite/internal/domain/local"
 	"github.com/moq77111113/kite/internal/domain/remote"
+	"github.com/moq77111113/kite/internal/infra/filesystem"
 	"github.com/moq77111113/kite/internal/infra/persistence/config"
 	"github.com/moq77111113/kite/internal/infra/storage/git"
 )
@@ -15,7 +16,7 @@ type Container struct {
 	Config            *config.Config
 	Repository        *remote.Repository
 	Tracker           *local.Tracker
-	Manager           *local.Manager
+	Installer         *local.Installer
 	ConflictChecker   *local.ConflictChecker
 	VersionComparator *local.VersionComparator
 }
@@ -34,9 +35,9 @@ func NewContainer(cfgPath string) (*Container, error) {
 
 	repository := remote.NewRepository(storage)
 
-	installer := local.NewFsInstaller()
-	locals := local.NewTracker(config.NewKitRegistry(cfg))
-	kitLifecycle := local.NewManager(installer, locals)
+	writer := filesystem.NewWriter()
+	tracker := local.NewTracker(config.NewKitRegistry(cfg))
+	installer := local.NewInstaller(writer, tracker)
 
 	conflictChecker := local.NewConflictChecker()
 	versionComparator := local.NewVersionComparator()
@@ -44,8 +45,8 @@ func NewContainer(cfgPath string) (*Container, error) {
 	return &Container{
 		Config:            cfg,
 		Repository:        repository,
-		Tracker:           locals,
-		Manager:           kitLifecycle,
+		Tracker:           tracker,
+		Installer:         installer,
 		ConflictChecker:   conflictChecker,
 		VersionComparator: versionComparator,
 	}, nil

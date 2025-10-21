@@ -26,7 +26,7 @@ func runAdd(cmd *cobra.Command, args []string) error {
 	}
 	cfg := c.Config
 	addFn := add.New(
-		c.Manager,
+		c.Installer,
 		c.ConflictChecker,
 		c.Tracker,
 		c.Repository,

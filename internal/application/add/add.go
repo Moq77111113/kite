@@ -8,22 +8,22 @@ import (
 )
 
 type Add struct {
-	setupService    *local.Manager
+	installer       *local.Installer
 	conflictChecker *local.ConflictChecker
-	installations   *local.Tracker
+	tracker         *local.Tracker
 	repository      *remote.Repository
 }
 
 func New(
-	setupService *local.Manager,
+	installer *local.Installer,
 	conflictChecker *local.ConflictChecker,
-	installations *local.Tracker,
+	tracker *local.Tracker,
 	repository *remote.Repository,
 ) *Add {
 	return &Add{
-		setupService:    setupService,
+		installer:       installer,
 		conflictChecker: conflictChecker,
-		installations:   installations,
+		tracker:         tracker,
 		repository:      repository,
 	}
 }
@@ -42,7 +42,7 @@ type Result struct {
 }
 
 func (s *Add) Execute(req Request) (*Result, error) {
-	destPath := s.setupService.CalculatePath(req.BasePath, req.Name, req.CustomPath)
+	destPath := s.installer.CalculatePath(req.BasePath, req.Name, req.CustomPath)
 
 	conflict, err := s.conflictChecker.Check(destPath)
 	if err != nil {
@@ -58,7 +58,7 @@ func (s *Add) Execute(req Request) (*Result, error) {
 		return nil, fmt.Errorf("failed to fetch kit: %w", err)
 	}
 
-	if err := s.setupService.Install(kit, destPath); err != nil {
+	if err := s.installer.Install(kit, destPath); err != nil {
 		return nil, fmt.Errorf("installation failed: %w", err)
 	}
 

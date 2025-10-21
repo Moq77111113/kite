@@ -8,19 +8,19 @@ import (
 )
 
 type Remove struct {
-	setupService *local.Manager
+	installer *local.Installer
 }
 
-func New(setupService *local.Manager) *Remove {
+func New(installer *local.Installer) *Remove {
 	return &Remove{
-		setupService: setupService,
+		installer: installer,
 	}
 }
 
 func (s *Remove) Execute(name, basePath string) error {
 	kitPath := filepath.Join(basePath, name)
 
-	if err := s.setupService.Uninstall(kitPath, name); err != nil {
+	if err := s.installer.Uninstall(kitPath, name); err != nil {
 		return fmt.Errorf("failed to uninstall kit: %w", err)
 	}
 

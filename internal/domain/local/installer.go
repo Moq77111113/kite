@@ -8,41 +8,82 @@ import (
 	"github.com/moq77111113/kite/internal/domain/models"
 )
 
-type FsInstaller interface {
-	Install(kit *models.Kit, destPath string) error
+type Installer struct {
+	writer  FileWriter
+	tracker *Tracker
 }
 
-type installer struct{}
-
-func NewFsInstaller() FsInstaller {
-	return &installer{}
+func NewInstaller(writer FileWriter, tracker *Tracker) *Installer {
+	return &Installer{
+		writer:  writer,
+		tracker: tracker,
+	}
 }
 
-func (i *installer) Install(kit *models.Kit, destPath string) error {
-	if err := os.MkdirAll(destPath, 0755); err != nil {
-		return fmt.Errorf("failed to create directory: %w", err)
+func (i *Installer) Install(kit *models.Kit, destPath string) error {
+	if kit == nil {
+		return fmt.Errorf("kit cannot be nil")
 	}
 
-	for _, file := range kit.Files {
-		if err := i.writeFile(destPath, file); err != nil {
-			return err
-		}
+	if len(kit.Files) == 0 {
+		return fmt.Errorf("kit %s has no files to install", kit.Name)
+	}
+
+	if destPath == "" {
+		return fmt.Errorf("destination path cannot be empty")
+	}
+
+	if err := i.writer.Install(kit, destPath); err != nil {
+		return fmt.Errorf("failed to install kit files: %w", err)
+	}
+
+	if err := i.tracker.Record(kit.Name, kit.Version); err != nil {
+		return fmt.Errorf("failed to record installation: %w", err)
 	}
 
 	return nil
 }
 
-func (i *installer) writeFile(basePath string, file models.File) error {
-	filePath := filepath.Join(basePath, file.Path)
-	dir := filepath.Dir(filePath)
-
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return fmt.Errorf("failed to create directory %s: %w", dir, err)
+func (i *Installer) Uninstall(kitPath, kitName string) error {
+	if kitPath == "" {
+		return fmt.Errorf("kit path cannot be empty")
 	}
 
-	if err := os.WriteFile(filePath, []byte(file.Content), 0644); err != nil {
-		return fmt.Errorf("failed to write file %s: %w", filePath, err)
+	absPath, err := filepath.Abs(kitPath)
+	if err != nil {
+		return fmt.Errorf("invalid path: %w", err)
+	}
+
+	if _, err := os.Stat(absPath); os.IsNotExist(err) {
+		return fmt.Errorf("kit not found at %s", absPath)
+	}
+
+	if err := os.RemoveAll(absPath); err != nil {
+		return fmt.Errorf("failed to remove kit directory: %w", err)
+	}
+
+	if err := i.tracker.Unregister(kitName); err != nil {
+		return fmt.Errorf("failed to unregister installation: %w", err)
 	}
 
 	return nil
+}
+
+func (i *Installer) Update(kit *models.Kit, destPath string) error {
+	if err := i.writer.Install(kit, destPath); err != nil {
+		return fmt.Errorf("failed to update kit files: %w", err)
+	}
+
+	if err := i.tracker.UpdateVersion(kit.Name, kit.Version); err != nil {
+		return fmt.Errorf("failed to update version: %w", err)
+	}
+
+	return nil
+}
+
+func (i *Installer) CalculatePath(basePath, kitName, customPath string) string {
+	if customPath != "" {
+		return customPath
+	}
+	return filepath.Join(basePath, kitName)
 }

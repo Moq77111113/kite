@@ -27,7 +27,7 @@ func runRemove(cmd *cobra.Command, args []string) error {
 
 	cfg := c.Config
 
-	rm := remove.New(c.Manager)
+	rm := remove.New(c.Installer)
 
 	name := args[0]
 	if err := rm.Execute(name, cfg.Path); err != nil {

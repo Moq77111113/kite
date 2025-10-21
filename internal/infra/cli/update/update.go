@@ -36,7 +36,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 		c.Repository,
 		c.Tracker,
 		c.VersionComparator,
-		c.Manager,
+		c.Installer,
 	)
 	var updates []updateapp.Check
 	err := console.Spinner("Checking for updates", func() error {

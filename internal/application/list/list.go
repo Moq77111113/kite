@@ -9,17 +9,17 @@ import (
 )
 
 type List struct {
-	repository    *remote.Repository
-	installations *local.Tracker
+	repository *remote.Repository
+	tracker    *local.Tracker
 }
 
 func New(
 	repository *remote.Repository,
-	installations *local.Tracker,
+	tracker *local.Tracker,
 ) *List {
 	return &List{
-		repository:    repository,
-		installations: installations,
+		repository: repository,
+		tracker:    tracker,
 	}
 }
 
@@ -53,7 +53,7 @@ func (s *List) Execute() ([]Item, error) {
 }
 
 func (s *List) enrichWithInstallationStatus(available []models.KitSummary) []Item {
-	installed := s.installations.ListInstalled()
+	installed := s.tracker.ListInstalled()
 
 	installedMap := make(map[string]bool)
 	for _, kit := range installed {
