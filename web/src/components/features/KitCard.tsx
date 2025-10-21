@@ -1,7 +1,7 @@
-import { getAvatarNumber } from '@/lib/utils';
-import type { KitSummary } from '@/types/kit';
-import { Link } from '@tanstack/solid-router';
-import { Show } from 'solid-js';
+import { getAvatarNumber } from "@/lib/utils";
+import type { KitSummary } from "@/types/kit";
+import { Link } from "@tanstack/solid-router";
+import { Show } from "solid-js";
 
 interface KitCardProps {
   kit: KitSummary;
@@ -15,7 +15,7 @@ export default function KitCard(props: KitCardProps) {
     <Link
       to="/kits/$name"
       params={{ name: props.kit.name }}
-      class="block rounded-xl border border-border bg-card p-5 transition-all hover:border-accent hover:shadow-lg group"
+      class="flex flex-col justify-between rounded-xl border border-border bg-card p-5 transition-all hover:border-accent hover:shadow-lg group"
     >
       <div class="flex items-start justify-between mb-3">
         <Show when={primaryTag()}>
@@ -26,7 +26,7 @@ export default function KitCard(props: KitCardProps) {
         <div
           class={`size-14 rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform bg-[var(--avatar)]`}
           style={{
-            '--avatar': `var(--avatar-${avatarNum()})`,
+            "--avatar": `var(--avatar-${avatarNum()})`,
           }}
         >
           <span class="text-2xl font-bold">
