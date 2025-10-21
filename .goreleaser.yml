@@ -4,9 +4,7 @@ project_name: kite
 
 before:
   hooks:
-    # Ensure the web UI is built before building binaries
-    # This should already be done by the release workflow, but we verify here
-    - sh -c "test -d web/dist || (echo 'Error: web/dist not found. Run pnpm build in web/ first.' && exit 1)"
+    - 'test -d web/dist || (echo "Error: web/dist not found. Run pnpm build in web/ first." && exit 1)'
 
 builds:
   - id: kite
