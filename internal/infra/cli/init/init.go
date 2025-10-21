@@ -1,6 +1,7 @@
 package initcmd
 
 import (
+	"github.com/moq77111113/kite/internal/infra/cli/annotations"
 	"github.com/spf13/cobra"
 )
 
@@ -9,6 +10,9 @@ func NewInitCmd() *cobra.Command {
 		Use:   "init",
 		Short: "Initialize a new project with kite.json config",
 		RunE:  runInit,
+		Annotations: map[string]string{
+			annotations.SkipContainer.String(): "true",
+		},
 	}
 
 	cmd.Flags().StringP("path", "p", "", "Path where kits will be installed (skip interactive)")

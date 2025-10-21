@@ -1,6 +1,7 @@
 package version
 
 import (
+	"github.com/moq77111113/kite/internal/infra/cli/annotations"
 	"github.com/moq77111113/kite/internal/version"
 	"github.com/moq77111113/kite/pkg/console"
 	"github.com/spf13/cobra"
@@ -11,6 +12,9 @@ func NewVersionCmd() *cobra.Command {
 		Use:   "version",
 		Short: "Show version information",
 		RunE:  runVersion,
+		Annotations: map[string]string{
+			annotations.SkipContainer.String(): "true",
+		},
 	}
 }
 
