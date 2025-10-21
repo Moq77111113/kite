@@ -1,28 +1,14 @@
-## Usage
+Kite — web UI
 
-```bash
-$ npm install # or pnpm install or yarn install
-```
+Yes, there's a web UI. It's tiny, opinionated, and embedded into the Go binary so you can ship one executable and still pretend this is "modern." 
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+Quick notes:
 
-## Available Scripts
+- Built with Solid + Vite. Static assets are compiled and go magik's `embed` package is used to bake them into the Go binary.
+- Run `kite serve` to start the Go server that serves the embedded UI (no Node process required — you're welcome).
+- Tweak `web/src` and run your usual Vite build to regenerate assets if you feel like changing the thing you weren't supposed to touch.
+- Vite dev server will proxy API requests to the Go backend for local development.
 
-In the project directory, you can run:
+Philosophy (TL;DR): small JS app + Go glue = no drama. Copy it. Break it. Tell no one.
 
-### `npm run dev`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-Learn more about deploying your application with the [documentations](https://vite.dev/guide/static-deploy.html)
+You're done here. (you know how to run a vite app, right?)

@@ -204,7 +204,11 @@ Push to Git. Point Kite at it. Ship.
 ## Roadmap
 
 **V0** (now): CLI + web UI + Git registries
-**V1**: Template variables, better search, CI integration
+
+**V0.5**: Template variables, better search, CI integration
+
+**V1**: Web registry hosting, user accounts, kit ratings
+
 **V2**: Analytics, offline mode, maybe a t-shirt
 
 And more, if you ask nicely.
