@@ -4,15 +4,18 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/moq77111113/kite/internal/domain/remote"
 	"github.com/moq77111113/kite/pkg/console"
 )
 
 type Storage struct {
-	cachePath string
-	repoURL   string
-	git       Client
+	cachePath   string
+	repoURL     string
+	git         Client
+	ttl         time.Duration
+	isLocalRepo bool
 }
 
 func NewStorage(repoURL string, gitClient Client) (remote.Storage, error) {
@@ -28,9 +31,11 @@ func NewStorage(repoURL string, gitClient Client) (remote.Storage, error) {
 	}
 
 	store := &Storage{
-		cachePath: cachePath,
-		repoURL:   repoURL,
-		git:       gitClient,
+		cachePath:   cachePath,
+		repoURL:     repoURL,
+		git:         gitClient,
+		ttl:         DefaultCacheTTL,
+		isLocalRepo: isLocalRepo,
 	}
 
 	if !isLocalRepo && !gitClient.IsCloned(cachePath) {
@@ -39,12 +44,19 @@ func NewStorage(repoURL string, gitClient Client) (remote.Storage, error) {
 			return nil, fmt.Errorf("failed to clone: %w", err)
 		}
 		console.Info("Registry cloned successfully")
+		if err := updateLastSync(cachePath); err != nil {
+			console.Print("Warning: failed to save cache metadata: %v\n", err)
+		}
 	}
 
 	return store, nil
 }
 
 func (s *Storage) ListDirectories() ([]string, error) {
+	if err := s.checkAndSync(); err != nil {
+		console.Print("Warning: auto-sync failed: %v\n", err)
+	}
+
 	var dirs []string
 
 	err := filepath.Walk(s.cachePath, func(path string, info os.FileInfo, err error) error {
@@ -97,7 +109,7 @@ func (s *Storage) FileExists(path string) bool {
 }
 
 func (s *Storage) Sync() error {
-	if IsLocalPath(s.repoURL) {
+	if s.isLocalRepo {
 		return nil
 	}
 
@@ -105,7 +117,30 @@ func (s *Storage) Sync() error {
 	if err := s.syncRepo(); err != nil {
 		return err
 	}
+
+	if err := updateLastSync(s.cachePath); err != nil {
+		console.Print("Warning: failed to update cache metadata: %v\n", err)
+	}
+
 	console.Info("Registry synced successfully")
+	return nil
+}
+
+func (s *Storage) checkAndSync() error {
+	if s.isLocalRepo {
+		return nil
+	}
+
+	if shouldSync(s.cachePath, s.ttl) {
+		if err := s.syncRepo(); err != nil {
+			return fmt.Errorf("auto-sync failed: %w", err)
+		}
+
+		if err := updateLastSync(s.cachePath); err != nil {
+			return fmt.Errorf("failed to update cache metadata: %w", err)
+		}
+	}
+
 	return nil
 }
 
