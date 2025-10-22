@@ -2,6 +2,7 @@ package list
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/moq77111113/kite/internal/domain/local"
 	"github.com/moq77111113/kite/internal/domain/models"
@@ -24,12 +25,13 @@ func New(
 }
 
 type Item struct {
-	Name        string   `json:"name"`
-	Version     string   `json:"version"`
-	Description string   `json:"description"`
-	Tags        []string `json:"tags"`
-	Author      string   `json:"author"`
-	Installed   bool     `json:"installed"`
+	Name        string     `json:"name"`
+	Version     string     `json:"version"`
+	Description string     `json:"description"`
+	Tags        []string   `json:"tags"`
+	Author      string     `json:"author"`
+	Installed   bool       `json:"installed"`
+	LastUpdated *time.Time `json:"lastUpdated,omitempty"`
 }
 
 func (s *List) Execute() ([]Item, error) {
@@ -69,6 +71,7 @@ func (s *List) enrichWithInstallationStatus(available []models.KitSummary) []Ite
 			Tags:        kit.Tags,
 			Installed:   installedMap[kit.Name],
 			Author:      kit.Author,
+			LastUpdated: kit.LastUpdated,
 		}
 		if item.Tags == nil {
 			item.Tags = []string{}

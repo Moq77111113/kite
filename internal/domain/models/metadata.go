@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Metadata struct {
 	Name        string     `yaml:"name"`
 	Description string     `yaml:"description"`
@@ -9,13 +11,14 @@ type Metadata struct {
 	Variables   []Variable `yaml:"variables,omitempty"`
 }
 
-func (m *Metadata) ToKitSummary() KitSummary {
+func (m *Metadata) ToKitSummary(lastUpdated *time.Time) KitSummary {
 	return KitSummary{
 		Name:        m.Name,
 		Description: m.Description,
 		Version:     m.Version,
 		Tags:        m.Tags,
 		Author:      m.Author,
+		LastUpdated: lastUpdated,
 	}
 }
 

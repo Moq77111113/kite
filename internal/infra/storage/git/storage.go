@@ -108,6 +108,14 @@ func (s *Storage) FileExists(path string) bool {
 	return err == nil
 }
 
+func (s *Storage) LastUpdate(path string) (*time.Time, error) {
+	lastModified, err := s.git.GetLastModifiedDate(s.cachePath, path)
+	if err != nil {
+		return nil, err
+	}
+	return &lastModified, nil
+}
+
 func (s *Storage) Sync() error {
 	if s.isLocalRepo {
 		return nil

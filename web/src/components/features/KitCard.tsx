@@ -1,5 +1,6 @@
 import TagsCarousel from "@/components/ui/TagsCarousel";
-import { getAvatarNumber } from "@/lib/utils";
+
+import { getAvatarNumber, timeSince } from "@/lib/utils";
 import type { KitSummary } from "@/types/kit";
 import { Link } from "@tanstack/solid-router";
 import { Show } from "solid-js";
@@ -46,6 +47,12 @@ export default function KitCard(props: KitCardProps) {
         <Show when={props.kit.author}>
           <span class="opacity-50">•</span>
           <span>by {props.kit.author}</span>
+        </Show>
+        <Show when={props.kit.lastUpdated}>
+          <span class="opacity-50">•</span>
+          <span class="opacity-75">
+            {timeSince(new Date(props.kit.lastUpdated ?? ""))}
+          </span>
         </Show>
       </div>
     </Link>
