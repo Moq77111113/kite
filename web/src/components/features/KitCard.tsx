@@ -1,3 +1,4 @@
+import TagsCarousel from "@/components/ui/TagsCarousel";
 import { getAvatarNumber } from "@/lib/utils";
 import type { KitSummary } from "@/types/kit";
 import { Link } from "@tanstack/solid-router";
@@ -17,14 +18,11 @@ export default function KitCard(props: KitCardProps) {
       params={{ name: props.kit.name }}
       class="flex flex-col justify-between rounded-xl border border-border bg-card p-5 transition-all hover:border-accent hover:shadow-lg group"
     >
-      <div class="flex items-start justify-between mb-3">
-        <Show when={primaryTag()}>
-          <span class="px-2.5 py-1 text-xs rounded-md bg-muted/50 text-muted-foreground capitalize font-medium">
-            {primaryTag()}
-          </span>
-        </Show>
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <TagsCarousel tags={props.kit.tags} maxVisible={3} />
+
         <div
-          class={`size-14 rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform bg-[var(--avatar)]`}
+          class={`size-14 rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform bg-[var(--avatar)] flex-shrink-0`}
           style={{
             "--avatar": `var(--avatar-${avatarNum()})`,
           }}
