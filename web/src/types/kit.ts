@@ -1,4 +1,5 @@
 export interface KitSummary {
+  id: string
   name: string
   version: string
   description: string

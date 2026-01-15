@@ -41,7 +41,7 @@ func ScanForKits(store Storage) ([]models.KitSummary, error) {
 			lastUpdated = nil
 		}
 
-		kits = append(kits, metadata.ToKitSummary(lastUpdated))
+		kits = append(kits, metadata.ToKitSummary(dir, lastUpdated))
 	}
 
 	return kits, nil
