@@ -134,6 +134,23 @@ func (s *Storage) Sync() error {
 	return nil
 }
 
+func (s *Storage) LastSync() (*time.Time, error) {
+	if s.isLocalRepo {
+		return nil, nil
+	}
+
+	meta, err := loadCacheMeta(s.cachePath)
+	if err != nil {
+		return nil, err
+	}
+
+	if meta.LastSync.IsZero() {
+		return nil, nil
+	}
+
+	return &meta.LastSync, nil
+}
+
 func (s *Storage) checkAndSync() error {
 	if s.isLocalRepo {
 		return nil

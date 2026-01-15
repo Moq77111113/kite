@@ -4,14 +4,19 @@ import Sidebar from '@/components/layout/Sidebar';
 import QuickSearch from '@/components/ui/search/QuickSearch';
 import { fireStore } from '@/stores/fireStore';
 import { searchStore } from '@/stores/searchStore';
-import { Outlet, getRouteApi } from '@tanstack/solid-router';
+import { Outlet, getRouteApi, useRouter } from '@tanstack/solid-router';
 import { createEffect, createSignal, onCleanup } from 'solid-js';
 
 const rootRoute = getRouteApi('__root__');
 
 export default function MainLayout() {
   const data = rootRoute.useLoaderData();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = createSignal(false);
+
+  const handleSyncComplete = () => {
+    router.invalidate();
+  };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -41,6 +46,8 @@ export default function MainLayout() {
         <Header
           onMenuClick={() => setSidebarOpen(true)}
           onSearchClick={searchStore.open}
+          lastSync={data().lastSync}
+          onSyncComplete={handleSyncComplete}
         />
 
         <main>

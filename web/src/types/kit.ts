@@ -21,4 +21,10 @@ export interface KitDetail extends KitSummary {
 
 export interface KitsResponse {
   kits: KitSummary[]
+  lastSync?: string
+}
+
+export interface SyncResponse {
+  status: string
+  lastSync?: string
 }

@@ -1,10 +1,13 @@
 import { GithubIcon, MenuIcon } from "@/components/ui/icons";
+import SyncButton from "@/components/ui/SyncButton";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { SITE_CONFIG } from "@/lib/site";
 
 interface HeaderProps {
   onMenuClick: () => void;
   onSearchClick: () => void;
+  lastSync?: string;
+  onSyncComplete?: (lastSync?: string) => void;
 }
 
 export default function Header(props: HeaderProps) {
@@ -32,6 +35,10 @@ export default function Header(props: HeaderProps) {
               ⌘K
             </kbd>
           </button>
+          <SyncButton
+            lastSync={props.lastSync}
+            onSyncComplete={props.onSyncComplete}
+          />
           <ThemeToggle />
           <a
             href={SITE_CONFIG.github.url}
@@ -55,6 +62,10 @@ export default function Header(props: HeaderProps) {
             <span class="text-xs">⌘</span>K
           </kbd>
         </button>
+        <SyncButton
+          lastSync={props.lastSync}
+          onSyncComplete={props.onSyncComplete}
+        />
         <ThemeToggle />
         <a
           href={SITE_CONFIG.github.url}
