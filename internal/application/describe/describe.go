@@ -52,7 +52,7 @@ func (s *Describe) Execute(name string) (Item, error) {
 
 	installedMap := map[string]bool{}
 	for _, kit := range s.tracker.ListInstalled() {
-		installedMap[kit.Name] = true
+		installedMap[kit.ID] = true
 	}
 
 	return Item{

@@ -47,10 +47,10 @@ func readKitFiles(store Storage, kitDir string) ([]models.File, error) {
 		}
 		b, err := store.ReadFile(p)
 		if err != nil {
-
 			continue
 		}
-		files = append(files, models.File{Path: p, Content: string(b)})
+		relPath, _ := filepath.Rel(kitDir, p)
+		files = append(files, models.File{Path: relPath, Content: string(b)})
 	}
 
 	return files, nil

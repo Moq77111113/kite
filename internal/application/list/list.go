@@ -60,7 +60,7 @@ func (s *List) enrichWithInstallationStatus(available []models.KitSummary) []Ite
 
 	installedMap := make(map[string]bool)
 	for _, kit := range installed {
-		installedMap[kit.Name] = true
+		installedMap[kit.ID] = true
 	}
 
 	var items []Item
