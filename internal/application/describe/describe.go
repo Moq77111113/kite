@@ -24,14 +24,15 @@ func New(
 }
 
 type Item struct {
-	Name        string          `json:"name"`
-	Version     string          `json:"version"`
-	Description string          `json:"description"`
-	Tags        []string        `json:"tags"`
-	Installed   bool            `json:"installed"`
+	ID          string        `json:"id"`
+	Name        string        `json:"name"`
+	Version     string        `json:"version"`
+	Description string        `json:"description"`
+	Tags        []string      `json:"tags"`
+	Installed   bool          `json:"installed"`
 	Files       []models.File `json:"files"`
-	Readme      string          `json:"readme"`
-	Author      string          `json:"author"`
+	Readme      string        `json:"readme"`
+	Author      string        `json:"author"`
 }
 
 func (s *Describe) Execute(name string) (Item, error) {
@@ -55,11 +56,12 @@ func (s *Describe) Execute(name string) (Item, error) {
 	}
 
 	return Item{
+		ID:          detail.ID,
 		Name:        detail.Name,
 		Version:     detail.Version,
 		Description: detail.Description,
 		Tags:        detail.Tags,
-		Installed:   installedMap[detail.Name],
+		Installed:   installedMap[detail.ID],
 		Files:       detail.Files,
 		Readme:      detail.Readme,
 		Author:      detail.Author,

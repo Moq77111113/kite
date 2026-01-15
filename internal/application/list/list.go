@@ -25,6 +25,7 @@ func New(
 }
 
 type Item struct {
+	ID          string     `json:"id"`
 	Name        string     `json:"name"`
 	Version     string     `json:"version"`
 	Description string     `json:"description"`
@@ -65,11 +66,12 @@ func (s *List) enrichWithInstallationStatus(available []models.KitSummary) []Ite
 	var items []Item
 	for _, kit := range available {
 		item := Item{
+			ID:          kit.ID,
 			Name:        kit.Name,
 			Version:     kit.Version,
 			Description: kit.Description,
 			Tags:        kit.Tags,
-			Installed:   installedMap[kit.Name],
+			Installed:   installedMap[kit.ID],
 			Author:      kit.Author,
 			LastUpdated: kit.LastUpdated,
 		}

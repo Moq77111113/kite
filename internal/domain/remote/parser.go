@@ -22,10 +22,6 @@ func ParseMetadata(yamlContent []byte) (*models.Metadata, error) {
 }
 
 func ValidateMetadata(metadata *models.Metadata) error {
-	if metadata.Name == "" {
-		return fmt.Errorf("missing required field: name")
-	}
-
 	if metadata.Version == "" {
 		return fmt.Errorf("missing required field: version")
 	}

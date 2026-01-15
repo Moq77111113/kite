@@ -30,7 +30,7 @@ func FindKit(store Storage, name string) (*models.Kit, error) {
 
 	readme := readReadme(store, kitDir)
 
-	return metadata.ToKitDetail(files, readme), nil
+	return metadata.ToKitDetail(name, files, readme), nil
 }
 
 func readKitFiles(store Storage, kitDir string) ([]models.File, error) {

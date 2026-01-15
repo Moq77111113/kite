@@ -11,9 +11,14 @@ type Metadata struct {
 	Variables   []Variable `yaml:"variables,omitempty"`
 }
 
-func (m *Metadata) ToKitSummary(lastUpdated *time.Time) KitSummary {
+func (m *Metadata) ToKitSummary(dirName string, lastUpdated *time.Time) KitSummary {
+	name := m.Name
+	if name == "" {
+		name = dirName
+	}
 	return KitSummary{
-		Name:        m.Name,
+		ID:          dirName,
+		Name:        name,
 		Description: m.Description,
 		Version:     m.Version,
 		Tags:        m.Tags,
@@ -22,9 +27,14 @@ func (m *Metadata) ToKitSummary(lastUpdated *time.Time) KitSummary {
 	}
 }
 
-func (m *Metadata) ToKitDetail(files []File, readme string) *Kit {
+func (m *Metadata) ToKitDetail(dirName string, files []File, readme string) *Kit {
+	name := m.Name
+	if name == "" {
+		name = dirName
+	}
 	return &Kit{
-		Name:        m.Name,
+		ID:          dirName,
+		Name:        name,
 		Version:     m.Version,
 		Author:      m.Author,
 		Description: m.Description,

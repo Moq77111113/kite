@@ -5,6 +5,7 @@ import type { KitSummary } from "@/types/kit";
 import { Link } from "@tanstack/solid-router";
 import { Show } from "solid-js";
 
+
 interface KitCardProps {
   kit: KitSummary;
 }
@@ -16,7 +17,7 @@ export default function KitCard(props: KitCardProps) {
   return (
     <Link
       to="/kits/$name"
-      params={{ name: props.kit.name }}
+      params={{ name: props.kit.id }}
       class="flex flex-col justify-between rounded-xl border border-border bg-card p-5 transition-all hover:border-accent hover:shadow-lg group"
     >
       <div class="flex items-start justify-between gap-3 mb-3">

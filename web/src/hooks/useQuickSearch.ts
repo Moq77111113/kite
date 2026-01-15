@@ -3,6 +3,7 @@ import type { KitSummary } from '@/types/kit';
 import { useNavigate } from '@tanstack/solid-router';
 import { createEffect, createSignal, onCleanup } from 'solid-js';
 
+
 export const useQuickSearch = (kits: KitSummary[]) => {
   const [query, setQuery] = createSignal('');
   const [selectedIndex, setSelectedIndex] = createSignal(0);
@@ -24,7 +25,7 @@ export const useQuickSearch = (kits: KitSummary[]) => {
   };
 
   const selectKit = (kit: KitSummary) => {
-    navigate({ to: '/kits/$name', params: { name: kit.name } });
+    navigate({ to: '/kits/$name', params: { name: kit.id } });
     searchStore.close();
   };
 
