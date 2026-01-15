@@ -16,52 +16,52 @@ func NewTracker(store models.KitRegistry) *Tracker {
 	}
 }
 
-func (r *Tracker) Record(name, version string) error {
-	if name == "" {
-		return fmt.Errorf("kit name cannot be empty")
+func (r *Tracker) Record(id, version string) error {
+	if id == "" {
+		return fmt.Errorf("kit id cannot be empty")
 	}
 
 	if version == "" {
 		return fmt.Errorf("kit version cannot be empty")
 	}
 
-	return r.store.Add(name, version)
+	return r.store.Add(id, version)
 }
 
-func (r *Tracker) Unregister(name string) error {
-	if name == "" {
-		return fmt.Errorf("kit name cannot be empty")
+func (r *Tracker) Unregister(id string) error {
+	if id == "" {
+		return fmt.Errorf("kit id cannot be empty")
 	}
 
-	_, err := r.store.Get(name)
+	_, err := r.store.Get(id)
 	if err != nil {
-		return fmt.Errorf("kit %s is not installed", name)
+		return fmt.Errorf("kit %s is not installed", id)
 	}
 
-	return r.store.Remove(name)
+	return r.store.Remove(id)
 }
 
-func (r *Tracker) GetInstalled(name string) (*models.InstalledKit, error) {
-	if name == "" {
-		return nil, fmt.Errorf("kit name cannot be empty")
+func (r *Tracker) GetInstalled(id string) (*models.InstalledKit, error) {
+	if id == "" {
+		return nil, fmt.Errorf("kit id cannot be empty")
 	}
 
-	return r.store.Get(name)
+	return r.store.Get(id)
 }
 
 func (r *Tracker) ListInstalled() []models.InstalledKit {
 	return r.store.List()
 }
 
-func (r *Tracker) IsInstalled(name string) bool {
-	_, err := r.store.Get(name)
+func (r *Tracker) IsInstalled(id string) bool {
+	_, err := r.store.Get(id)
 	return err == nil
 }
 
-func (r *Tracker) UpdateVersion(name, version string) error {
-	if !r.IsInstalled(name) {
-		return fmt.Errorf("kit %s is not installed", name)
+func (r *Tracker) UpdateVersion(id, version string) error {
+	if !r.IsInstalled(id) {
+		return fmt.Errorf("kit %s is not installed", id)
 	}
 
-	return r.Record(name, version)
+	return r.Record(id, version)
 }

@@ -39,7 +39,7 @@ func (s *Update) CheckAll() ([]Check, error) {
 	installed := s.tracker.ListInstalled()
 
 	for _, kit := range installed {
-		latest, err := s.repository.GetKit(kit.Name)
+		latest, err := s.repository.GetKit(kit.ID)
 		if err != nil {
 			continue
 		}
@@ -50,7 +50,7 @@ func (s *Update) CheckAll() ([]Check, error) {
 		}
 
 		updates = append(updates, Check{
-			Name:           kit.Name,
+			Name:           kit.ID,
 			CurrentVersion: kit.Version,
 			LatestVersion:  latest.Version,
 		})

@@ -37,14 +37,14 @@ func (i *Installer) Install(kit *models.Kit, destPath string) error {
 		return fmt.Errorf("failed to install kit files: %w", err)
 	}
 
-	if err := i.tracker.Record(kit.Name, kit.Version); err != nil {
+	if err := i.tracker.Record(kit.ID, kit.Version); err != nil {
 		return fmt.Errorf("failed to record installation: %w", err)
 	}
 
 	return nil
 }
 
-func (i *Installer) Uninstall(kitPath, kitName string) error {
+func (i *Installer) Uninstall(kitPath, kitID string) error {
 	if kitPath == "" {
 		return fmt.Errorf("kit path cannot be empty")
 	}
@@ -62,7 +62,7 @@ func (i *Installer) Uninstall(kitPath, kitName string) error {
 		return fmt.Errorf("failed to remove kit directory: %w", err)
 	}
 
-	if err := i.tracker.Unregister(kitName); err != nil {
+	if err := i.tracker.Unregister(kitID); err != nil {
 		return fmt.Errorf("failed to unregister installation: %w", err)
 	}
 
@@ -74,7 +74,7 @@ func (i *Installer) Update(kit *models.Kit, destPath string) error {
 		return fmt.Errorf("failed to update kit files: %w", err)
 	}
 
-	if err := i.tracker.UpdateVersion(kit.Name, kit.Version); err != nil {
+	if err := i.tracker.UpdateVersion(kit.ID, kit.Version); err != nil {
 		return fmt.Errorf("failed to update version: %w", err)
 	}
 
