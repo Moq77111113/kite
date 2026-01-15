@@ -29,6 +29,7 @@ func (s *Server) setupRoutes() {
 	api.HandleFunc("/health", s.healthCheck).Methods("GET")
 	api.HandleFunc("/kits", s.listKits).Methods("GET")
 	api.HandleFunc("/kits/{name}", s.getKit).Methods("GET")
+	api.HandleFunc("/sync", s.syncRegistry).Methods("POST")
 
 	staticFS, err := fs.Sub(web.DistFS, "dist")
 	if err != nil {

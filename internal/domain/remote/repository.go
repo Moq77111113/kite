@@ -2,6 +2,7 @@ package remote
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/moq77111113/kite/internal/domain/models"
 )
@@ -43,4 +44,8 @@ func (r *Repository) Sync() error {
 		return fmt.Errorf("failed to sync: %w", err)
 	}
 	return nil
+}
+
+func (r *Repository) LastSync() (*time.Time, error) {
+	return r.storage.LastSync()
 }

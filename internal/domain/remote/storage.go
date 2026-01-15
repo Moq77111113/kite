@@ -8,5 +8,6 @@ type Storage interface {
 	FileExists(path string) bool
 	ReadFile(path string) ([]byte, error)
 	LastUpdate(path string) (*time.Time, error)
+	LastSync() (*time.Time, error)
 	Sync() error
 }

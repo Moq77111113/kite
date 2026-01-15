@@ -37,6 +37,8 @@ func (s *Server) listKits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lastSync, _ := s.container.Repository.LastSync()
+
 	tag := r.URL.Query().Get("tag")
 	if tag != "" {
 		filtered := make([]any, 0)
@@ -45,12 +47,13 @@ func (s *Server) listKits(w http.ResponseWriter, r *http.Request) {
 				filtered = append(filtered, k)
 			}
 		}
-		respondJSON(w, map[string]any{"kits": filtered}, http.StatusOK)
+		respondJSON(w, map[string]any{"kits": filtered, "lastSync": lastSync}, http.StatusOK)
 		return
 	}
 
 	respondJSON(w, map[string]any{
-		"kits": kits,
+		"kits":     kits,
+		"lastSync": lastSync,
 	}, http.StatusOK)
 }
 
@@ -76,4 +79,17 @@ func (s *Server) getKit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondJSON(w, item, http.StatusOK)
+}
+
+func (s *Server) syncRegistry(w http.ResponseWriter, r *http.Request) {
+	if err := s.container.Repository.Sync(); err != nil {
+		respondError(w, fmt.Sprintf("Sync failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	lastSync, _ := s.container.Repository.LastSync()
+	respondJSON(w, map[string]any{
+		"status":   "synced",
+		"lastSync": lastSync,
+	}, http.StatusOK)
 }
