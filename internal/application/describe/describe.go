@@ -24,15 +24,16 @@ func New(
 }
 
 type Item struct {
-	ID          string        `json:"id"`
-	Name        string        `json:"name"`
-	Version     string        `json:"version"`
-	Description string        `json:"description"`
-	Tags        []string      `json:"tags"`
-	Installed   bool          `json:"installed"`
-	Files       []models.File `json:"files"`
-	Readme      string        `json:"readme"`
-	Author      string        `json:"author"`
+	ID          string            `json:"id"`
+	Name        string            `json:"name"`
+	Version     string            `json:"version"`
+	Description string            `json:"description"`
+	Tags        []string          `json:"tags"`
+	Installed   bool              `json:"installed"`
+	Files       []models.File     `json:"files"`
+	Readme      string            `json:"readme"`
+	Author      string            `json:"author"`
+	Variables   []models.Variable `json:"variables"`
 }
 
 func (s *Describe) Execute(name string) (Item, error) {
@@ -65,5 +66,6 @@ func (s *Describe) Execute(name string) (Item, error) {
 		Files:       detail.Files,
 		Readme:      detail.Readme,
 		Author:      detail.Author,
+		Variables:   detail.Variables,
 	}, nil
 }
