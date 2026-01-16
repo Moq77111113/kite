@@ -42,7 +42,7 @@ export default function MainLayout() {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <div class="flex-1 lg:ml-64">
+      <div class="flex-1 lg:ml-64 min-w-0">
         <Header
           onMenuClick={() => setSidebarOpen(true)}
           onSearchClick={searchStore.open}

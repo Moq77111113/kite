@@ -38,11 +38,13 @@ export function SectionNav(props: SectionNavProps) {
   });
 
   return (
-    <nav class="sticky top-24 space-y-2">
-      <div class="text-xs font-semibold text-muted-foreground mb-3 tracking-wider">
+    <nav class="sticky top-24">
+      <div class="text-xs font-semibold text-muted-foreground mb-3 tracking-wider uppercase">
         On this page
       </div>
-      <div class="relative">
+
+      {/* Desktop layout (sidebar) */}
+      <div class="hidden lg:block relative">
         <div class="absolute left-0 top-0 bottom-0 w-px bg-border" />
         <ul class="space-y-2">
           <For each={props.sections}>
@@ -63,6 +65,28 @@ export function SectionNav(props: SectionNavProps) {
                         : "h-0 bg-border"
                     }`}
                   />
+                  {section.label}
+                </a>
+              </li>
+            )}
+          </For>
+        </ul>
+      </div>
+
+      {/* Mobile layout (inline) */}
+      <div class="lg:hidden">
+        <ul class="space-y-2">
+          <For each={props.sections}>
+            {(section) => (
+              <li>
+                <a
+                  href={`#${section.id}`}
+                  class={`cursor-pointer block text-sm transition-colors ${
+                    activeSection() === section.id
+                      ? "text-foreground font-medium"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
                   {section.label}
                 </a>
               </li>

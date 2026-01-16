@@ -33,19 +33,19 @@ export function CodeBlock(props: CodeBlockProps) {
   });
 
   return (
-    <div class="rounded-xl border border-border overflow-hidden shadow-sm bg-[hsl(var(--code-bg))]">
-      <div class="px-5 py-3 border-b border-border bg-muted/30 flex items-center justify-between">
-        <span class="text-sm font-semibold text-foreground font-mono">
+    <div class="rounded-xl border border-border overflow-hidden shadow-sm bg-[hsl(var(--code-bg))] max-w-full">
+      <div class="px-4 sm:px-5 py-3 border-b border-border bg-muted/30 flex items-center justify-between gap-2 min-w-0">
+        <span class="text-sm font-semibold text-foreground font-mono truncate min-w-0">
           {props.filename || 'Code'}
         </span>
         <CopyButton text={props.content} />
       </div>
       {isMarkdown ? (
-        <div class="p-5">
+        <div class="p-4 sm:p-5 overflow-x-auto">
           <MarkdownRenderer markdown={props.content} />
         </div>
       ) : (
-        <pre class="p-5 text-sm overflow-x-auto font-mono leading-relaxed">
+        <pre class="p-4 sm:p-5 text-sm overflow-x-auto font-mono leading-relaxed max-w-full">
           <code ref={codeRef} class={`language-${lang()}`}>
             {props.content}
           </code>
