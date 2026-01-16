@@ -14,9 +14,18 @@ export interface KitFile {
   lastUpdated?: string
 }
 
+export interface Variable {
+  name: string
+  type: string
+  default: string
+  description: string
+  required: boolean
+}
+
 export interface KitDetail extends KitSummary {
   files: KitFile[]
   readme: string
+  variables: Variable[]
 }
 
 export interface KitsResponse {
