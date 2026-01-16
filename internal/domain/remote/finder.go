@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/moq77111113/kite/internal/domain/models"
+	"github.com/moq77111113/kite/internal/domain/template"
 )
 
 const ReadmeFile = "README.md"
@@ -29,8 +30,13 @@ func FindKit(store Storage, name string) (*models.Kit, error) {
 	}
 
 	readme := readReadme(store, kitDir)
+	kit := metadata.ToKitDetail(name, files, readme)
 
-	return metadata.ToKitDetail(name, files, readme), nil
+	engine := template.NewEngine()
+	detected := engine.ExtractFromFiles(files)
+	kit.Variables = template.MergeWithMetadata(detected, metadata.Variables)
+
+	return kit, nil
 }
 
 func readKitFiles(store Storage, kitDir string) ([]models.File, error) {
