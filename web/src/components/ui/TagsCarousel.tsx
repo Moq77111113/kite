@@ -104,7 +104,7 @@ export default function TagsCarousel(props: TagsCarouselProps) {
         </For>
         <Show when={props.tags.length > maxVisible()}>
           <span
-            class="px-2 py-1 text-xs text-muted-foreground font-medium flex-shrink-0"
+            class="px-2 py-1 text-xs text-muted-foreground font-medium shrink-0"
             classList={{
               hidden: isHovering(),
             }}

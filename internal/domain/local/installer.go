@@ -21,26 +21,25 @@ func NewInstaller(writer FileWriter, tracker *Tracker) *Installer {
 }
 
 func (i *Installer) Install(kit *models.Kit, destPath string) error {
+	return i.InstallWithOptions(kit, destPath, InstallOptions{})
+}
+
+func (i *Installer) InstallWithOptions(kit *models.Kit, destPath string, opts InstallOptions) error {
 	if kit == nil {
 		return fmt.Errorf("kit cannot be nil")
 	}
-
 	if len(kit.Files) == 0 {
 		return fmt.Errorf("kit %s has no files to install", kit.Name)
 	}
-
 	if destPath == "" {
 		return fmt.Errorf("destination path cannot be empty")
 	}
-
-	if err := i.writer.Install(kit, destPath); err != nil {
+	if err := i.writer.InstallWithOptions(kit, destPath, opts); err != nil {
 		return fmt.Errorf("failed to install kit files: %w", err)
 	}
-
 	if err := i.tracker.Record(kit.ID, kit.Version); err != nil {
 		return fmt.Errorf("failed to record installation: %w", err)
 	}
-
 	return nil
 }
 

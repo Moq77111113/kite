@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/moq77111113/kite/internal/domain/local"
+	"github.com/moq77111113/kite/internal/domain/models"
 	"github.com/moq77111113/kite/internal/domain/remote"
 )
 
@@ -32,6 +33,7 @@ type Request struct {
 	Name       string
 	CustomPath string
 	BasePath   string
+	Variables  map[string]string
 }
 
 type Result struct {
@@ -58,7 +60,8 @@ func (s *Add) Execute(req Request) (*Result, error) {
 		return nil, fmt.Errorf("failed to fetch kit: %w", err)
 	}
 
-	if err := s.installer.Install(kit, destPath); err != nil {
+	opts := local.InstallOptions{Variables: req.Variables}
+	if err := s.installer.InstallWithOptions(kit, destPath, opts); err != nil {
 		return nil, fmt.Errorf("installation failed: %w", err)
 	}
 
@@ -68,4 +71,12 @@ func (s *Add) Execute(req Request) (*Result, error) {
 		InstalledPath: destPath,
 		FilesCount:    len(kit.Files),
 	}, nil
+}
+
+func (s *Add) GetKitVariables(name string) ([]models.Variable, error) {
+	kit, err := s.repository.GetKit(name)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch kit: %w", err)
+	}
+	return kit.Variables, nil
 }
