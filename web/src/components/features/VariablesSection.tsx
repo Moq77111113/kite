@@ -1,16 +1,20 @@
 import { CopyButton } from '@/components/ui/CopyButton'
 import type { Variable } from '@/types/kit'
-import { createSignal, For, Show } from 'solid-js'
+import { For, Show } from 'solid-js'
 
 interface Props {
   kitId: string
   variables: Variable[]
+  values: Record<string, string>
+  onValuesChange: (values: Record<string, string>) => void
 }
 
 export function VariablesSection(props: Props) {
-  const [values, setValues] = createSignal<Record<string, string>>(
-    Object.fromEntries(props.variables.map((v) => [v.name, v.default || '']))
-  )
+  const values = () => props.values
+
+  const handleChange = (name: string, value: string) => {
+    props.onValuesChange({ ...props.values, [name]: value })
+  }
 
   const command = () => {
     const parts = [`kite add ${props.kitId}`]
@@ -22,7 +26,7 @@ export function VariablesSection(props: Props) {
   }
 
   return (
-    <div class="space-y-4 min-w-0">
+    <div class="space-y-4 min-w-0 px-2">
       <div class="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
         Variables
       </div>
@@ -40,7 +44,7 @@ export function VariablesSection(props: Props) {
               <input
                 type="text"
                 value={values()[variable.name] || ''}
-                onInput={(e) => setValues((prev) => ({ ...prev, [variable.name]: e.target.value }))}
+                onInput={(e) => handleChange(variable.name, e.target.value)}
                 placeholder={variable.default || variable.name}
                 class="w-full px-3 py-2 text-xs rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
               />

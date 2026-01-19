@@ -43,7 +43,6 @@ export function SectionNav(props: SectionNavProps) {
         On this page
       </div>
 
-      {/* Desktop layout (sidebar) */}
       <div class="hidden lg:block relative">
         <div class="absolute left-0 top-0 bottom-0 w-px bg-border" />
         <ul class="space-y-2">
@@ -73,7 +72,6 @@ export function SectionNav(props: SectionNavProps) {
         </ul>
       </div>
 
-      {/* Mobile layout (inline) */}
       <div class="lg:hidden">
         <ul class="space-y-2">
           <For each={props.sections}>

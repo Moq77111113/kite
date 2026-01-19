@@ -6,7 +6,7 @@ import { CopyButton } from "@/components/ui/CopyButton";
 import { MarkdownRenderer } from "@/components/ui/Markdown";
 import { createFileRoute } from "@tanstack/solid-router";
 
-import { For, Show, createMemo } from "solid-js";
+import { createSignal, For, Show, createMemo } from "solid-js";
 
 export const Route = createFileRoute("/kits/$name")({
   loader: ({ params }) => fetchKit(params.name),
@@ -16,6 +16,11 @@ export const Route = createFileRoute("/kits/$name")({
 function KitDetail() {
   const kit = Route.useLoaderData();
   const hasVars = () => !!kit().variables?.length;
+
+  const [variableValues, setVariableValues] = createSignal<Record<string, string>>(
+    Object.fromEntries(kit().variables?.map((v) => [v.name, v.default || '']) || [])
+  );
+
   const sections = createMemo(() => {
     const secs = [{ id: "install", label: "Installation" }];
     if (kit().readme) {
@@ -72,7 +77,12 @@ function KitDetail() {
               <SectionNav sections={sections()} />
             </div>
             <Show when={hasVars()}>
-              <VariablesSection kitId={kit().id} variables={kit().variables} />
+              <VariablesSection
+                kitId={kit().id}
+                variables={kit().variables}
+                values={variableValues()}
+                onValuesChange={setVariableValues}
+              />
             </Show>
           </div>
 
@@ -90,7 +100,11 @@ function KitDetail() {
             <div class="space-y-4">
               <For each={kit().files}>
                 {(file) => (
-                  <CodeBlock content={file.content} filename={file.path} />
+                  <CodeBlock
+                    content={file.content}
+                    filename={file.path}
+                    variableValues={variableValues()}
+                  />
                 )}
               </For>
             </div>
@@ -103,7 +117,12 @@ function KitDetail() {
               <SectionNav sections={sections()} />
             </div>
             <Show when={hasVars()}>
-              <VariablesSection kitId={kit().id} variables={kit().variables} />
+              <VariablesSection
+                kitId={kit().id}
+                variables={kit().variables}
+                values={variableValues()}
+                onValuesChange={setVariableValues}
+              />
             </Show>
           </div>
         </aside>
